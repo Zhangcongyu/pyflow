@@ -1,0 +1,352 @@
+---
+name: projectflow-executor
+description: |
+  读取 pjflow/versioned/task_plan.md，逐阶段执行计划，更新 progress.md 和 CHECKLIST.md。
+
+  **触发条件**: 由 projectflow-planner 调用，或用户说"继续执行 task_plan.md"
+
+  **核心职责**:
+  - 检测版本目录并读取对应的 task_plan.md
+  - 找到下一个 pending 的 Phase
+  - 根据 Tool 字段调用对应的工具/技能/代理
+  - 更新 CHECKLIST.md
+  - 更新 progress.md
+  - 标记 Phase 为 complete
+
+---
+
+# Projectflow Executor
+
+## 编排者行为准则
+
+**你是编排者（ORCHESTRATOR）**：
+- ✅ **可以**创建脚手架（项目基础设施配置）
+- ❌ **禁止**编写业务逻辑代码（必须使用 TDD 工具链）
+
+### 四步执行流程
+
+**每个 Phase 必须严格遵守**：
+
+1. **调用 tool/skill/agent** → 使用 Skill/Task/Bash 工具
+2. **等待完成** ⏸️ → 暂停所有操作，等待 tool 返回
+3. **验证结果** ✓ → 检查输出是否符合预期
+4. **记录状态** 📝 → 更新状态，继续下一阶段
+
+### 🚨 绝对禁止
+
+- ❌ 在 tool 执行期间自己写代码
+- ❌ 在 tool 执行期间自己创建文件
+- ❌ 认为"tool 太慢，我来帮忙"
+- ❌ 跳过等待直接进入下一阶段
+
+### 💡 关键认知
+
+你是**指挥官**，不是**士兵**。你的工作是决定"**谁来做**"，不是"**怎么做的**"。
+
+**判断标准**：
+- 这是脚手架吗？（所有项目都需要） → 使用 Write 工具 ✅
+- 这是业务逻辑吗？（包含具体功能） → 使用 TDD 工具 ❌
+
+---
+
+## 核心职责
+
+读取 `./pjflow/task_plan.md`，逐阶段执行，持续更新状态：
+
+```
+读取 ./pjflow/task_plan.md
+   ↓
+找到下一个 pending 的 Phase
+   ↓
+【验证】读取合规文档 (Constitution + Requirements)
+   ↓
+调用对应的 Tool（带入文档上下文）
+   ↓
+【验证】检查输出合规性
+   ↓
+更新 CHECKLIST.md
+更新 ./pjflow/progress.md
+标记 Phase 为 complete
+   ↓
+所有 Phase 完成？
+   ├─ 否 → 继续下一个 Phase
+   └─ 是 → 执行完成
+```
+
+## CHECKLIST.md P0 级别更新要求 ⭐
+
+**在每个 Phase 完成后，必须更新 CHECKLIST.md 对应的 checkbox！**
+
+### 更新时机
+
+| Phase | 更新时机 | 更新内容 |
+|-------|---------|---------|
+| **Phase 0** | brainstorming 完成后 | 需求分析相关 checkbox |
+| **Phase 1** | constitution 创建后 | 项目规则相关 checkbox |
+| **Phase 2** | 脚手架创建后 | 项目准备相关 checkbox |
+| **Phase 4.1** | RED Phase 完成后 | TDD-RED 相关 checkbox |
+| **Phase 4.2** | GREEN Phase 完成后 | TDD-GREEN 相关 checkbox |
+| **Phase 4.3** | REFACTOR Phase 完成后 | TDD-REFACTOR 相关 checkbox |
+| **Phase 5** | 质量审核完成后 | 质量审核和 Git 相关 checkbox |
+
+### 更新方法
+
+使用 **Edit 工具** 将 `[ ]` 替换为 `[x]`：
+
+```python
+Edit(
+    file_path="CHECKLIST.md",
+    old_string="- [ ] Constitution created/updated\n- [ ] Project-specific rules defined",
+    new_string="- [x] Constitution created/updated\n- [x] Project-specific rules defined"
+)
+```
+
+### 验证 CHECKLIST 已更新
+
+```bash
+# 确认至少有一个 [x] 标记
+grep -q "\[x\]" CHECKLIST.md && echo "✅ CHECKLIST 已更新" || echo "❌ CHECKLIST 未更新"
+
+# 统计已完成的项
+echo "已完成: $(grep '\[x\]' CHECKLIST.md | wc -l) 项"
+```
+
+**🚨 重要**: 这是 P0 级别要求！未更新 CHECKLIST 视为 Phase 未完成！
+
+---
+
+## Phase 4 TDD 执行强制性检查点
+
+### 执行前强制检查清单
+
+**在开始 Phase 4 之前，必须确认**：
+
+```bash
+# 检查清单（必须全部通过）
+[ ] 我没有手动创建任何 .py 文件
+[ ] 我没有手动编写任何代码
+[ ] 我准备调用工具来完成 TDD
+[ ] 我理解等待工具返回是必要的
+```
+
+### 检查失败处理
+
+**如果检查失败**：
+- ❌ 你手动创建了文件 → **立即删除**，调用工具完成
+- ❌ 你想"帮工具一把" → **立即停止**，让工具自己完成
+
+**记住**：工具比手动更可靠、更快速、质量更高！
+
+---
+
+## Agent 调用前强制检查清单
+
+### Task 工具参数格式
+
+**🚨 Agent 调用前强制检查清单**：
+
+```
+□ 使用 Task 工具（不是 Skill）
+□ subagent_type 在第一位
+□ 包含 subject（简短标题，imperative form）
+□ 包含 description（详细描述）
+□ 包含 activeForm（正在进行时）
+□ 包含 prompt（完整上下文）
+□ 参数顺序符合示例格式
+```
+
+### ⚠️ 常见错误对照
+
+| ❌ 错误 | ✅ 正确 | 说明 |
+|---------|--------|------|
+| `description="..."` 在第一位 | `subagent_type="..."` 在第一位 | 参数顺序重要 |
+| 无 `subject` | `subject="..."` (必需) | 必须有 subject |
+| 无 `activeForm` | `activeForm="..."` (必需) | 必须有 activeForm |
+| 凭记忆调用 | 参考本文档 | 必须遵守格式 |
+
+---
+
+## 执行流程
+
+### Step 1: 检测版本目录并读取对应的 task_plan.md
+
+**版本目录结构**:
+```
+pjflow/
+├── v0_initial/                    ← 新建项目
+│   └── task_plan.md
+│
+├── v1_add_percentage/           ← 第1次新增功能
+│   └── task_plan.md
+│
+├── v2_add_power_function/       ← 第2次新增功能
+│   └── task_plan.md
+│
+└── vN_add_feature_name/         ← 第N次新增功能
+    └── task_plan.md
+```
+
+**检测逻辑**：
+```python
+# 步骤1：扫描版本目录
+import os
+from pathlib import Path
+
+pjflow_dir = Path("./pjflow")
+
+# 扫描所有版本目录
+version_dirs = [d for d in pjflow_dir.iterdir() if d.is_dir() and d.name.startswith("v")]
+
+if len(version_dirs) == 0:
+    # 没有任何版本目录，当前在根目录
+    current_plan_path = "./pjflow/task_plan.md"
+    current_version = "root"
+elif len(version_dirs) == 1:
+    # 只有一个版本目录，假设是 v0_initial
+    current_plan_path = f"./pjflow/v0_initial/task_plan.md"
+    current_version = "v0_initial"
+else:
+    # 找到最新版本号
+    version_numbers = [int(d.name.split("_")[0] for d in version_dirs]
+    latest_version = max(version_numbers)
+    # 读取最新版本的 task_plan.md
+    latest_dir = pjflow_dir / f"v{latest_version}_*"
+    current_plan_path = f"{latest_dir}/task_plan.md"
+    current_version = f"v{latest_version}"
+
+# 后续步骤使用 current_version 和 current_plan_path
+print(f"检测到版本目录: {current_version}")
+print(f"读取计划文件: {current_plan_path}")
+```
+
+**使用 Read 工具读取检测到的 task_plan.md**
+
+### Step 2: 找到下一个 pending 的 Phase
+
+遍历所有 Phase，找到第一个 `Status: pending` 的 Phase
+
+### Step 3: 解析 Phase 信息
+
+从 Phase 中提取：Description, Tool, Tool Type, Args, CHECKLIST, Status
+
+### Step 4: 更新 Phase 状态为 in_progress
+
+使用 **Edit 工具**将 Status 从 `pending` 改为 `in_progress`
+
+### Step 4.5: 判断脚手架 vs 业务编码
+
+**在调用任何 Tool 之前**，必须判断当前 Phase 是否属于脚手架创建：
+
+**判断标准**: 详见 [orchestration-rules.md](references/orchestration-rules.md)
+
+**关键问题**:
+- 这是脚手架吗？（所有项目都需要） → 使用 Write 工具 ✅
+- 这是业务逻辑吗？（包含具体功能） → 使用 TDD 工具 ❌
+
+**示例**:
+```
+Phase 2 (项目准备)     → 脚手架 → 使用 Write 工具 ✅
+Phase 4 (TDD 执行)      → 业务逻辑 → 使用 pyflow-tdd-cycle ❌
+```
+
+---
+
+## 会话恢复
+
+用户说："继续执行 task_plan.md" → 自动读取 `./pjflow/task_plan.md`，找到下一个 pending 的 Phase 继续执行
+
+---
+
+## References
+
+### execution-rules.md
+Tool 调用格式和 CHECKLIST 更新规则的详细说明
+
+### compliance-enforcement.md
+合规性执行规则，确保 Constitution 和 Requirements 得到全程遵守
+
+### orchestration-rules.md
+编排者防错指南，阐明脚手架创建与 TDD 编码的区别
+
+### constitution-compliance.md
+Constitution 合规性检查指南，适用于 Phase 4 (TDD 执行) + Phase 5 (质量审核)
+
+### scaffold-creation.md
+Phase 2 项目准备的详细执行指南
+
+### project-archetypes.md
+常见 Python 项目类型目录结构和必要文件
+
+---
+
+**版本**: 1.3.0
+**用途**: ProjectFlow 架构 - 执行器
+**更新**: 添加版本目录检测、引用完整性
+
+### Step 1: 检测版本目录并读取对应的 task_plan.md
+
+**版本目录结构**:
+```
+pjflow/
+├── v0_initial/                    ← 新建项目
+│   └── task_plan.md
+│
+├── v1_add_percentage/           ← 第1次新增功能
+│   └── task_plan.md
+│
+├── v2_add_power_function/       ← 第2次新增功能
+│   └── task_plan.md
+│
+└── vN_add_feature_name/         ← 第N次新增功能
+    └── task_plan.md
+```
+
+**检测逻辑**:
+```python
+# 步骤1：扫描版本目录
+import os
+from pathlib import Path
+
+pjflow_dir = Path("./pjflow")
+
+# 扫描所有版本目录
+version_dirs = [d for d in pjflow_dir.iterdir() if d.is_dir() and d.name.startswith("v")]
+
+if len(version_dirs) == 0:
+    # 没有任何版本目录，当前在根目录
+    current_plan_path = "./pjflow/task_plan.md"
+    current_version = "root"
+elif len(version_dirs) == 1:
+    # 只有一个版本目录，假设是 v0_initial
+    current_plan_path = f"./pjflow/v0_initial/task_plan.md"
+    current_version = "v0_initial"
+else:
+    # 找到最新版本号
+    version_numbers = [int(d.name.split("_")[0] for d in version_dirs]
+    latest_version = max(version_numbers)
+    # 读取最新版本的 task_plan.md
+    latest_dir = pjflow_dir / f"v{latest_version}_*"
+    current_plan_path = f"{latest_dir}/task_plan.md"
+    current_version = f"v{latest_version}"
+
+# 后续步骤使用 current_version 和 current_plan_path
+print(f"检测到版本目录: {current_version}")
+print(f"读取计划文件: {current_plan_path}")
+```
+
+**使用 Read 工具读取检测到的 task_plan.md**
+
+### Step 2: 找到下一个 pending 的 Phase
+
+遍历所有 Phase，找到第一个 `Status: pending` 的 Phase
+
+### Step 3: 解析 Phase 信息
+
+从 Phase 中提取：Description, Tool, Tool Type, Args, CHECKLIST, Status
+
+### Step 4: 更新 Phase 状态为 in_progress
+
+使用 **Edit 工具**将 Status 从 `pending` 改为 `in_progress`
+
+### Step 4.5: 验证前置条件与读取合规文档
+
