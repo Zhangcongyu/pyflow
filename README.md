@@ -1,246 +1,250 @@
 # ProjectFlow
 
-> **智能项目开发编排流水线** - 自动化项目创建与功能开发的全流程管理
+> **Intelligent Project Development Orchestration Pipeline** - Full-process automation for project creation and feature development
 
-ProjectFlow 是一个基于 Claude Code 的智能项目开发编排系统，通过三个核心组件的协作，实现从项目创建到功能迭代的完整自动化流程。
-
----
-
-## 目录
-
-- [核心特性](#核心特性)
-- [架构概览](#架构概览)
-- [快速开始](#快速开始)
-- [核心组件](#核心组件)
-- [工作流程](#工作流程)
-- [版本管理](#版本管理)
-- [使用示例](#使用示例)
-- [支持的语言](#支持的语言)
+ProjectFlow is an intelligent project development orchestration system based on Claude Code. Through collaboration of three core components, it achieves complete automation from project creation to feature iteration.
 
 ---
 
-## 核心特性
-
-### 三维智能检测
-
-- **项目状态检测**: 自动识别新项目 (`--new`) 与老项目 (`--add-feature`)
-- **复杂度评估**: 智能判断项目复杂度 (`--simple` / `--medium` / `--complex`)
-- **语言类型识别**: 支持 Python、TypeScript、Go 等多种编程语言
-
-### 自动化编排
-
-- **环境检测**: 自动分析 Git、虚拟环境、项目结构
-- **模板驱动**: 基于综合模板自动生成可执行计划
-- **版本化管理**: 每次迭代独立版本目录，完整追溯历史
-
-### TDD 原则
-
-- **测试驱动开发**: 强制使用 TDD 工具链编写业务逻辑
-- **质量把关**: 每个阶段都有 CHECKLIST 验证
-- **合规检查**: 强制读取项目宪法和需求文档
-
-### 语言无关
-
-- **通用执行器**: Executor 不关心具体语言，只关心流程编排
-- **可扩展架构**: 轻松支持新语言和工具链
+**Language**: [English](README.md) | [简体中文](README.zh-CN.md)
 
 ---
 
-## 架构概览
+## Table of Contents
+
+- [Core Features](#core-features)
+- [Architecture Overview](#architecture-overview)
+- [Quick Start](#quick-start)
+- [Core Components](#core-components)
+- [Workflow](#workflow)
+- [Version Management](#version-management)
+- [Usage Examples](#usage-examples)
+- [Supported Languages](#supported-languages)
+
+---
+
+## Core Features
+
+### Three-Dimensional Intelligent Detection
+
+- **Project Status Detection**: Automatically identify new projects (`--new`) vs existing projects (`--add-feature`)
+- **Complexity Assessment**: Intelligently determine project complexity (`--simple` / `--medium` / `--complex`)
+- **Language Type Recognition**: Support for Python, TypeScript, Go, and other programming languages
+
+### Automated Orchestration
+
+- **Environment Detection**: Automatically analyze Git, virtual environments, and project structure
+- **Template-Driven**: Automatically generate executable plans based on comprehensive templates
+- **Versioned Management**: Independent version directories for each iteration with complete history tracking
+
+### TDD Principles
+
+- **Test-Driven Development**: Enforce TDD toolchain for business logic development
+- **Quality Gates**: CHECKLIST validation for each phase
+- **Compliance Checking**: Mandatory reading of project constitution and requirements documents
+
+### Language Agnostic
+
+- **Universal Executor**: Executor is language-agnostic, focusing only on process orchestration
+- **Extensible Architecture**: Easy to support new languages and toolchains
+
+---
+
+## Architecture Overview
 
 ```
-用户请求
+User Request
     ↓
 ┌─────────────────────────────────────────┐
-│  projectflow-router (三维检测器)       │
-│  - 检测项目状态 (新/老)                │
-│  - 检测复杂度 (简单/中等/复杂)          │
-│  - 检测语言 (Python/TS/Go)             │
-│  - 传递参数给 planner                  │
+│  projectflow-router (3D Detector)       │
+│  - Detect project status (new/existing) │
+│  - Detect complexity (simple/medium/complex) │
+│  - Detect language (Python/TS/Go)       │
+│  - Pass parameters to planner          │
 └─────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────┐
-│  projectflow-planner (计划生成器)       │
-│  - 检测项目环境                        │
-│  - 确定版本目录                        │
-│  - 读取综合模板                        │
-│  - 转化模板内容                        │
-│  - 生成 task_plan.md                   │
-│  - 调用 executor                       │
+│  projectflow-planner (Plan Generator)   │
+│  - Detect project environment           │
+│  - Determine version directory          │
+│  - Read comprehensive template          │
+│  - Transform template content           │
+│  - Generate task_plan.md               │
+│  - Invoke executor                     │
 └─────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────┐
-│  projectflow-executor (执行器)          │
-│  - 读取 task_plan.md                   │
-│  - 找到下一个 pending 的 Phase          │
-│  - 验证文档 (constitution, reqs)        │
-│  - 调用 Tool                           │
-│  - 验证输出                            │
-│  - 更新 CHECKLIST & progress            │
-│  - 标记 Phase complete                 │
+│  projectflow-executor (Executor)        │
+│  - Read task_plan.md                   │
+│  - Find next pending Phase             │
+│  - Verify documents (constitution, reqs)│
+│  - Invoke Tool                         │
+│  - Validate output                     │
+│  - Update CHECKLIST & progress         │
+│  - Mark Phase complete                │
 └─────────────────────────────────────────┘
 ```
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 创建新项目
+### Create New Project
 
 ```bash
-# 用户请求示例
-"帮我创建一个简单的 Python CLI 工具"
+# User request example
+"Help me create a simple Python CLI tool"
 
-# ProjectFlow 自动执行
-# 1. Router 检测: --new --simple --python
-# 2. Planner 生成计划: pjflow/v0_initial/task_plan.md
-# 3. Executor 执行: Phase 1 → Phase 2 → Phase 4 → Phase 5
+# ProjectFlow automatic execution
+# 1. Router detects: --new --simple --python
+# 2. Planner generates plan: pjflow/v0_initial/task_plan.md
+# 3. Executor executes: Phase 1 → Phase 2 → Phase 4 → Phase 5
 ```
 
-### 为现有项目添加功能
+### Add Feature to Existing Project
 
 ```bash
-# 用户请求示例
-"为这个项目添加一个用户认证 API"
+# User request example
+"Add a user authentication API to this project"
 
-# ProjectFlow 自动执行
-# 1. Router 检测: --add-feature --medium --python
-# 2. Planner 生成计划: pjflow/v1_auth_api/task_plan.md
-# 3. Executor 执行: Phase 0 → Phase 3 → Phase 4 → Phase 5
+# ProjectFlow automatic execution
+# 1. Router detects: --add-feature --medium --python
+# 2. Planner generates plan: pjflow/v1_auth_api/task_plan.md
+# 3. Executor executes: Phase 0 → Phase 3 → Phase 4 → Phase 5
 ```
 
 ---
 
-## 核心组件
+## Core Components
 
-### 1. projectflow-router (三维检测器)
+### 1. projectflow-router (3D Detector)
 
-**职责**: 纯检测器，负责参数传递和路由，不执行任何实现工作
+**Responsibility**: Pure detector responsible for parameter passing and routing, does not execute any implementation work
 
-**检测维度**:
+**Detection Dimensions**:
 
-| 维度 | 参数 | 说明 |
-|-------|------|------|
-| **项目状态** | `--new` / `--add-feature` | 新项目 vs 老项目新增功能 |
-| **项目复杂度** | `--simple` / `--medium` / `--complex` | 简单 / 中等 / 复杂 |
-| **语言类型** | `--python` / `--typescript` / `--go` | Python / TypeScript / Go |
+| Dimension | Parameters | Description |
+|-----------|-------------|--------------|
+| **Project Status** | `--new` / `--add-feature` | New project vs existing project adding feature |
+| **Project Complexity** | `--simple` / `--medium` / `--complex` | Simple / Medium / Complex |
+| **Language Type** | `--python` / `--typescript` / `--go` | Python / TypeScript / Go |
 
-**检测规则**:
+**Detection Rules**:
 
-- **新项目信号**: "创建"、"新建"、"build from scratch"、目录为空、无项目配置文件
-- **老项目信号**: "添加"、"新增"、"extend"、"add feature"、存在项目配置文件
-- **复杂度关键词**:
-  - 简单: "简单"、"小的"、"quick"、"单个功能"、"工具"
-  - 中等: "中等"、"几个功能"、"API"、"CRUD"、"数据处理"
-  - 复杂: "复杂"、"大型的"、"完整系统"、"平台"、"框架"、"高性能"
+- **New Project Signals**: "create", "new", "build from scratch", empty directory, no project config files
+- **Existing Project Signals**: "add", "extend", "add feature", existing project config files
+- **Complexity Keywords**:
+  - Simple: "simple", "small", "quick", "single feature", "utility"
+  - Medium: "medium", "several features", "API", "CRUD", "data processing"
+  - Complex: "complex", "large-scale", "complete system", "platform", "framework", "high-performance"
 
-### 2. projectflow-planner (计划生成器)
+### 2. projectflow-planner (Plan Generator)
 
-**职责**: 检测环境 → 读取模板 → 生成可执行计划 → 调用 executor
+**Responsibility**: Detect environment → Read template → Generate executable plan → Invoke executor
 
-**核心流程**:
+**Core Process**:
 
 ```
-三维参数输入
+3D parameters input
    ↓
-Step 1: 检测项目环境
+Step 1: Detect project environment
    ↓
-Step 2: 确定版本目录
+Step 2: Determine version directory
    ↓
-Step 3: 读取综合模板
+Step 3: Read comprehensive template
    ↓
-Step 4: 转化模板内容
+Step 4: Transform template content
    ↓
-Step 5: 生成 task_plan.md
+Step 5: Generate task_plan.md
    ↓
-Step 6: 调用 executor
+Step 6: Invoke executor
 ```
 
-**环境检测**:
+**Environment Detection**:
 
 ```bash
 python .claude/skills/projectflow-planner/scripts/detect_environment.py --json
 ```
 
-**输出字段**: Git 状态、虚拟环境、项目结构、项目类型等
+**Output Fields**: Git status, virtual environment, project structure, project type, etc.
 
-### 3. projectflow-executor (执行器)
+### 3. projectflow-executor (Executor)
 
-**职责**: 逐阶段执行计划，更新状态和 CHECKLIST，验证合规性
+**Responsibility**: Execute plan phase by phase, update status and CHECKLIST, validate compliance
 
-**编排原则**:
+**Orchestration Principles**:
 
-- ✅ **可以**: 创建脚手架（项目基础设施配置）
-- ❌ **禁止**: 编写业务逻辑代码（必须使用 TDD 工具链）
-- 🌍 **语言无关**: 适用于任何编程语言
+- ✅ **Can**: Create scaffolding (project infrastructure configuration)
+- ❌ **Cannot**: Write business logic code (must use TDD toolchain)
+- 🌍 **Language Agnostic**: Applicable to any programming language
 
-**四步执行流程** (每个 Phase 必须严格遵守):
+**Four-Step Execution Flow** (Each phase must strictly follow):
 
-1. **调用 tool/skill/agent** → 使用 Skill/Task/Bash 工具
-2. **等待完成** ⏸️ → 暂停所有操作，等待 tool 返回
-3. **验证结果** ✓ → 检查输出是否符合预期
-4. **记录状态** 📝 → 更新状态，继续下一阶段
-
----
-
-## 工作流程
-
-### Phase 执行策略
-
-| Phase | 新项目 | 添加功能 | 说明 |
-|-------|--------|----------|------|
-| **Phase 0**: 需求互动 | medium/complex | medium/complex | 使用 brainstorming 探索需求 |
-| **Phase 1**: 项目规则 | ✅ | ❌ | 创建 constitution.md |
-| **Phase 2**: 项目构建 | ✅ | ❌ | 创建项目脚手架 |
-| **Phase 3**: 工作树准备 | ❌ | ✅ | 创建 feature 分支、添加依赖 |
-| **Phase 4**: TDD 执行 | ✅ | ✅ | 使用 TDD 工具实现功能 |
-| **Phase 5**: 质量审核 | ✅ | ✅ | 质量检查和 Git 提交 |
-
-### 脚手架 vs 业务逻辑判断标准
-
-- **这是脚手架吗？** (所有项目都需要) → 使用 **Write/Bash** 工具 ✅
-- **这是业务逻辑吗？** (包含具体功能) → 使用 **TDD 工具** ❌
-
-**示例**:
-```
-Phase 2 (项目准备)  → 脚手架 → 使用 Write 工具创建目录和配置 ✅
-Phase 4 (TDD 执行)   → 业务逻辑 → 调用 pyflow-tdd-cycle ❌
-```
+1. **Invoke tool/skill/agent** → Use Skill/Task/Bash tools
+2. **Wait for completion** ⏸️ → Pause all operations, wait for tool return
+3. **Validate result** ✓ → Check if output meets expectations
+4. **Record status** 📝 → Update status, proceed to next phase
 
 ---
 
-## 版本管理
+## Workflow
 
-### 目录结构
+### Phase Execution Strategy
+
+| Phase | New Project | Add Feature | Description |
+|-------|-------------|-------------|--------------|
+| **Phase 0**: Requirements Interaction | medium/complex | medium/complex | Use brainstorming to explore requirements |
+| **Phase 1**: Project Rules | ✅ | ❌ | Create constitution.md |
+| **Phase 2**: Project Build | ✅ | ❌ | Create project scaffolding |
+| **Phase 3**: Worktree Preparation | ❌ | ✅ | Create feature branch, add dependencies |
+| **Phase 4**: TDD Execution | ✅ | ✅ | Implement features using TDD tools |
+| **Phase 5**: Quality Review | ✅ | ✅ | Quality check and Git commit |
+
+### Scaffold vs Business Logic Judgment Criteria
+
+- **Is this scaffolding?** (All projects need it) → Use **Write/Bash** tools ✅
+- **Is this business logic?** (Contains specific functionality) → Use **TDD tools** ❌
+
+**Examples**:
+```
+Phase 2 (Project Setup)  → Scaffold → Use Write tool to create directories and configs ✅
+Phase 4 (TDD Execution)   → Business Logic → Invoke pyflow-tdd-cycle ❌
+```
+
+---
+
+## Version Management
+
+### Directory Structure
 
 ```
 pjflow/
-├── constitution.md      # 项目级宪法（共享）
-├── requirements.md       # 需求文档（可选）
+├── constitution.md      # Project-level constitution (shared)
+├── requirements.md       # Requirements document (optional)
 │
-├── v0_initial/          # 新项目
+├── v0_initial/          # New project
 │   ├── task_plan.md
 │   ├── progress.md
 │   ├── findings.md
 │   └── CHECKLIST.md
 │
-├── v1_add_feature/      # 第1次新增功能
+├── v1_add_feature/      # 1st feature addition
 │   ├── task_plan.md
 │   ├── progress.md
 │   └── findings.md
 │
-└── v{N}_feature/        # 第N次新增功能
+└── v{N}_feature/        # Nth feature addition
     └── ...
 ```
 
-### 版本目录命名规则
+### Version Directory Naming Rules
 
-| 项目状态 | 版本目录名称 | 说明 |
-|---------|-------------|------|
-| new (新建项目) | `v0_initial` | 固定名称 |
-| add-feature (新增功能) | `v{N}_{feature_name}` | N 为递增版本号 |
+| Project Status | Version Directory Name | Description |
+|----------------|------------------------|--------------|
+| new (new project) | `v0_initial` | Fixed name |
+| add-feature (add feature) | `v{N}_{feature_name}` | N is incremental version number |
 
-### 自动版本号递增
+### Automatic Version Number Increment
 
 ```bash
 existing_versions=$(find ./pjflow -maxdepth 1 -type d -name "v*" 2>/dev/null | sort -V)
@@ -250,87 +254,87 @@ else
     max_version=$(echo "$existing_versions" | tail -1 | sed 's/v//')
     next_version=$((max_version + 1))
 fi
-echo "下一个版本号: v${next_version}"
+echo "Next version: v${next_version}"
 ```
 
 ---
 
-## 使用示例
+## Usage Examples
 
-### 示例 1: 新建简单的 Python CLI 工具
+### Example 1: Create Simple Python CLI Tool
 
-**用户请求**: "帮我创建一个简单的 Python CLI 工具"
+**User Request**: "Help me create a simple Python CLI tool"
 
-**Router 检测**:
+**Router Detection**:
 ```bash
-Skill(skill="projectflow-planner", args="--new --simple --python 帮我创建一个简单的 Python CLI 工具")
+Skill(skill="projectflow-planner", args="--new --simple --python Help me create a simple Python CLI tool")
 ```
 
-**Planner 执行**:
-1. 检测环境（无 Git，无虚拟环境）
-2. 确定版本目录: `v0_initial`
-3. 读取 `python-complete-template.md`
-4. 生成 `pjflow/v0_initial/task_plan.md` (Phase 1, 2, 4, 5)
-5. 调用 executor
+**Planner Execution**:
+1. Detect environment (no Git, no virtual environment)
+2. Determine version directory: `v0_initial`
+3. Read `python-complete-template.md`
+4. Generate `pjflow/v0_initial/task_plan.md` (Phase 1, 2, 4, 5)
+5. Invoke executor
 
-**Executor 执行**:
-- **Phase 1**: 调用 `pyflow-constitution` 创建宪法
-- **Phase 2**: 创建项目脚手架 (pyproject.toml, src/, tests/)
-- **Phase 4**: 调用 `pyflow-tdd-cycle` 实现功能
-- **Phase 5**: 质量审核和 Git 提交
+**Executor Execution**:
+- **Phase 1**: Invoke `pyflow-constitution` to create constitution
+- **Phase 2**: Create project scaffolding (pyproject.toml, src/, tests/)
+- **Phase 4**: Invoke `pyflow-tdd-cycle` to implement features
+- **Phase 5**: Quality review and Git commit
 
-### 示例 2: 为现有 Python 项目添加中等复杂度的 API 功能
+### Example 2: Add Medium Complexity API Feature to Existing Python Project
 
-**用户请求**: "为这个项目添加一个用户认证 API"
+**User Request**: "Add a user authentication API to this project"
 
-**Router 检测**:
+**Router Detection**:
 ```bash
-Skill(skill="projectflow-planner", args="--add-feature --medium --python 为这个项目添加一个用户认证 API")
+Skill(skill="projectflow-planner", args="--add-feature --medium --python Add a user authentication API to this project")
 ```
 
-**Planner 执行**:
-1. 检测环境（已存在 Git 和项目结构）
-2. 确定版本目录: `v1_auth_api`
-3. 读取 `python-complete-template.md`
-4. 生成 `pjflow/v1_auth_api/task_plan.md` (Phase 0, 3, 4, 5)
-5. 调用 executor
+**Planner Execution**:
+1. Detect environment (Git and project structure already exist)
+2. Determine version directory: `v1_auth_api`
+3. Read `python-complete-template.md`
+4. Generate `pjflow/v1_auth_api/task_plan.md` (Phase 0, 3, 4, 5)
+5. Invoke executor
 
-**Executor 执行**:
-- **Phase 0**: 调用 `pyflow-brainstorming` 探索需求
-- **Phase 3**: 创建 feature 分支，添加依赖
-- **Phase 4**: 调用 `pyflow-tdd-cycle` 实现 API
-- **Phase 5**: 质量审核和 PR
+**Executor Execution**:
+- **Phase 0**: Invoke `pyflow-brainstorming` to explore requirements
+- **Phase 3**: Create feature branch, add dependencies
+- **Phase 4**: Invoke `pyflow-tdd-cycle` to implement API
+- **Phase 5**: Quality review and PR
 
 ---
 
-## 支持的语言
+## Supported Languages
 
-| 语言 | 模板文件 | 复杂度支持 | TDD 工具 | 配置文件 |
-|------|---------|------------|---------|----------|
+| Language | Template File | Complexity Support | TDD Tool | Config File |
+|----------|---------------|-------------------|----------|--------------|
 | **Python** | `python-complete-template.md` | ✅ simple/medium/complex | `pyflow-tdd-cycle` | `pyproject.toml` |
 | **TypeScript** | `typescript-complete-template.md` | ✅ simple/medium/complex | `tdd-typescript-tool` | `package.json` |
-| **Go** | `go-template.md` | ⚠️ 基础结构 | `go-tdd-tool` | `go.mod` |
-| **Rust** | - | 🚧 计划中 | `cargo-tdd-tool` | `Cargo.toml` |
-| **Java** | - | 🚧 计划中 | `junit-tdd-tool` | `pom.xml` |
+| **Go** | `go-template.md` | ⚠️ Basic structure | `go-tdd-tool` | `go.mod` |
+| **Rust** | - | 🚧 Planned | `cargo-tdd-tool` | `Cargo.toml` |
+| **Java** | - | 🚧 Planned | `junit-tdd-tool` | `pom.xml` |
 
 ---
 
-## CHECKLIST 管理
+## CHECKLIST Management
 
-### 更新时机
+### Update Timing
 
-| Phase | 更新内容 |
-|-------|---------|
-| Phase 0 | 需求分析相关 checkbox |
-| Phase 1 | 项目规则相关 checkbox |
-| Phase 2 | 项目准备相关 checkbox（含干扰检测） |
-| Phase 3 | 工作环境相关 checkbox（含 Git 分支、依赖、系统文件、新文件） |
-| Phase 4 | TDD 执行相关 checkbox |
-| Phase 5 | 质量审核和 Git 相关 checkbox |
+| Phase | Update Content |
+|-------|----------------|
+| Phase 0 | Requirements analysis related checkboxes |
+| Phase 1 | Project rules related checkboxes |
+| Phase 2 | Project preparation related checkboxes (including conflict detection) |
+| Phase 3 | Work environment related checkboxes (including Git branch, dependencies, system files, new files) |
+| Phase 4 | TDD execution related checkboxes |
+| Phase 5 | Quality review and Git related checkboxes |
 
-### 更新方法
+### Update Method
 
-使用 **Edit 工具** 将 `[ ]` 替换为 `[x]`：
+Use **Edit tool** to replace `[ ]` with `[x]`:
 
 ```python
 Edit(
@@ -340,58 +344,58 @@ Edit(
 )
 ```
 
-**重要**: 未更新 CHECKLIST 视为 Phase 未完成！
+**Important**: Unupdated CHECKLIST is considered incomplete Phase!
 
 ---
 
-## 常见问题
+## FAQ
 
-### Q: Executor 为什么不能直接编写业务代码？
+### Q: Why can't Executor write business code directly?
 
-A: ProjectFlow 强制使用 TDD 工具链编写业务逻辑，确保：
-- 测试先行原则
-- 代码质量可控
-- 符合项目宪法要求
-- 可追溯性和可维护性
+A: ProjectFlow enforces using TDD toolchain for business logic to ensure:
+- Test-first principle
+- Controllable code quality
+- Compliance with project constitution requirements
+- Traceability and maintainability
 
-### Q: 如何验证 Executor 是否正确执行？
+### Q: How to verify Executor executed correctly?
 
-A: 每个 Phase 完成后必须：
-1. Tool 执行完成，无错误
-2. 输出符合 constitution.md 要求
-3. CHECKLIST.md 已更新
-4. progress.md 已更新
-5. Phase 状态已标记为 complete
+A: After each Phase completion, must:
+1. Tool execution completed without errors
+2. Output meets constitution.md requirements
+3. CHECKLIST.md updated
+4. progress.md updated
+5. Phase status marked as complete
 
-### Q: 版本目录如何自动管理？
+### Q: How are version directories managed automatically?
 
-A: Planner 自动计算下一个版本号：
-- 新项目固定使用 `v0_initial`
-- 添加功能时自动递增版本号（v1, v2, v3...）
-
----
-
-## 版本信息
-
-- **Router**: 4.0.0 - 三维检测器（语言无关）
-- **Planner**: 4.1.0 - 环境检测 + 模板转化 + 计划生成
-- **Executor**: 4.0.0 - 逐阶段执行器（语言无关）
+A: Planner automatically calculates the next version number:
+- New projects always use `v0_initial`
+- Adding features automatically increments version number (v1, v2, v3...)
 
 ---
 
-## 文档
+## Version Information
 
-- [完整工作流文档](docs/projectflow-workflow.md)
-- [Router 技能说明](.claude/skills/projectflow-router/SKILL.md)
-- [Planner 技能说明](.claude/skills/projectflow-planner/SKILL.md)
-- [Executor 技能说明](.claude/skills/projectflow-executor/SKILL.md)
+- **Router**: 4.0.0 - 3D Detector (Language Agnostic)
+- **Planner**: 4.1.0 - Environment Detection + Template Transformation + Plan Generation
+- **Executor**: 4.0.0 - Phase-by-Phase Executor (Language Agnostic)
 
 ---
 
-## 许可证
+## Documentation
+
+- [Complete Workflow Documentation](docs/projectflow-workflow.md)
+- [Router Skill Description](.claude/skills/projectflow-router/SKILL.md)
+- [Planner Skill Description](.claude/skills/projectflow-planner/SKILL.md)
+- [Executor Skill Description](.claude/skills/projectflow-executor/SKILL.md)
+
+---
+
+## License
 
 MIT License
 
 ---
 
-**ProjectFlow** - 让项目开发更智能，让代码质量更可靠！
+**ProjectFlow** - Make project development smarter, make code quality more reliable!
