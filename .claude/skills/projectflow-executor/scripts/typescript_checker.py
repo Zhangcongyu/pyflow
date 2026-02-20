@@ -244,7 +244,7 @@ class TypeScriptComplianceChecker(BaseComplianceChecker):
                                 )
                             )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:
@@ -305,7 +305,7 @@ class TypeScriptComplianceChecker(BaseComplianceChecker):
                                 )
                             )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:

@@ -12,13 +12,11 @@
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
-def detect_git_repo(cwd: Path) -> Dict[str, any]:
+def detect_git_repo(cwd: Path) -> dict[str, any]:
     """检测Git仓库状态"""
     git_dir = cwd / ".git"
 
@@ -27,7 +25,7 @@ def detect_git_repo(cwd: Path) -> Dict[str, any]:
         "initialized": False,
         "branch": None,
         "has_remote": False,
-        "remotes": []
+        "remotes": [],
     }
 
     if not result["exists"]:
@@ -50,20 +48,21 @@ def detect_git_repo(cwd: Path) -> Dict[str, any]:
             result["has_remote"] = True
             # 提取remote名称
             import re
+
             remotes = re.findall(r'\[remote "([^"]+)"\]', content)
             result["remotes"] = remotes
 
     return result
 
 
-def detect_virtual_env(cwd: Path) -> Dict[str, any]:
+def detect_virtual_env(cwd: Path) -> dict[str, any]:
     """检测虚拟环境/包管理器（支持多语言）"""
     result = {
         "has_env": False,
         "env_type": None,
         "env_location": None,
         "language": None,
-        "details": {}
+        "details": {},
     }
 
     # Python 虚拟环境检测
@@ -102,7 +101,12 @@ def detect_virtual_env(cwd: Path) -> Dict[str, any]:
     yarn_lock = cwd / "yarn.lock"
     pnpm_lock = cwd / "pnpm-lock.yaml"
 
-    if node_modules.exists() or package_lock.exists() or yarn_lock.exists() or pnpm_lock.exists():
+    if (
+        node_modules.exists()
+        or package_lock.exists()
+        or yarn_lock.exists()
+        or pnpm_lock.exists()
+    ):
         result["has_env"] = True
         result["env_type"] = "nodejs"
         result["env_location"] = "node_modules"
@@ -150,7 +154,7 @@ def detect_virtual_env(cwd: Path) -> Dict[str, any]:
     return result
 
 
-def detect_project_structure(cwd: Path) -> Dict[str, any]:
+def detect_project_structure(cwd: Path) -> dict[str, any]:
     """检测项目架构（支持多语言）"""
     result = {
         # 通用文件
@@ -178,13 +182,12 @@ def detect_project_structure(cwd: Path) -> Dict[str, any]:
         # 项目类型和语言
         "project_type": None,
         "language": None,
-        "framework": None
+        "framework": None,
     }
 
     # 检测通用文件
     result["has_readme"] = any(
-        (cwd / f"README{ext}").exists()
-        for ext in ["", ".md", ".rst", ".txt"]
+        (cwd / f"README{ext}").exists() for ext in ["", ".md", ".rst", ".txt"]
     )
     result["has_gitignore"] = (cwd / ".gitignore").exists()
 
@@ -219,7 +222,9 @@ def detect_project_structure(cwd: Path) -> Dict[str, any]:
 
     # 检测 Java 配置文件
     result["has_pom_xml"] = (cwd / "pom.xml").exists()
-    result["has_build_gradle"] = (cwd / "build.gradle").exists() or (cwd / "build.gradle.kts").exists()
+    result["has_build_gradle"] = (cwd / "build.gradle").exists() or (
+        cwd / "build.gradle.kts"
+    ).exists()
 
     # 检测项目语言
     if result["has_pyproject_toml"] or result["has_setup_py"]:
@@ -237,6 +242,7 @@ def detect_project_structure(cwd: Path) -> Dict[str, any]:
     if result["language"] == "python" and result["has_pyproject_toml"]:
         try:
             import toml
+
             pyproject = toml.loads((cwd / "pyproject.toml").read_text())
 
             # 检查 dependencies
@@ -267,6 +273,7 @@ def detect_project_structure(cwd: Path) -> Dict[str, any]:
     elif result["language"] == "typescript" and result["has_package_json"]:
         try:
             import json
+
             package_json = json.loads((cwd / "package.json").read_text())
 
             deps = package_json.get("dependencies", {})
@@ -322,7 +329,7 @@ def detect_project_structure(cwd: Path) -> Dict[str, any]:
     return result
 
 
-def detect_project_age(cwd: Path) -> Dict[str, any]:
+def detect_project_age(cwd: Path) -> dict[str, any]:
     """检测项目年龄（新项目 vs 老项目）"""
     git_info = detect_git_repo(cwd)
     structure = detect_project_structure(cwd)
@@ -331,7 +338,7 @@ def detect_project_age(cwd: Path) -> Dict[str, any]:
         "is_new_project": False,
         "is_old_project": False,
         "confidence": "low",
-        "reasoning": []
+        "reasoning": [],
     }
 
     # 判断依据
@@ -368,7 +375,7 @@ def detect_project_age(cwd: Path) -> Dict[str, any]:
     return result
 
 
-def detect_all(cwd: Optional[Path] = None) -> Dict[str, any]:
+def detect_all(cwd: Path | None = None) -> dict[str, any]:
     """执行所有检测"""
     if cwd is None:
         cwd = Path.cwd()
@@ -381,7 +388,7 @@ def detect_all(cwd: Optional[Path] = None) -> Dict[str, any]:
         "project_age": detect_project_age(cwd),
         "timestamp": {
             "detected_at": None  # TODO: 添加时间戳
-        }
+        },
     }
 
 
@@ -405,31 +412,20 @@ def main():
   python detect_environment.py --check venv
   python detect_environment.py --check structure
   python detect_environment.py --check age
-        """
+        """,
     )
 
     parser.add_argument(
-        "--dir",
-        type=Path,
-        default=None,
-        help="要检测的项目目录（默认为当前目录）"
+        "--dir", type=Path, default=None, help="要检测的项目目录（默认为当前目录）"
     )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="以JSON格式输出结果"
-    )
+    parser.add_argument("--json", action="store_true", help="以JSON格式输出结果")
     parser.add_argument(
         "--check",
         choices=["git", "venv", "structure", "age", "all"],
         default="all",
-        help="检测特定方面（默认：全部）"
+        help="检测特定方面（默认：全部）",
     )
-    parser.add_argument(
-        "--quiet",
-        action="store_true",
-        help="安静模式，只输出检测结果"
-    )
+    parser.add_argument("--quiet", action="store_true", help="安静模式，只输出检测结果")
 
     args = parser.parse_args()
 
@@ -457,7 +453,7 @@ def main():
         print(json.dumps(result, indent=2, ensure_ascii=False))
     else:
         if not args.quiet:
-            print(f"# Environment Detection Results")
+            print("# Environment Detection Results")
             print(f"# Directory: {cwd}")
             print()
 
@@ -478,14 +474,16 @@ def main():
             if venv["has_env"]:
                 print(f"  - Type: {venv['env_type'] or 'unknown'}")
                 print(f"  - Location: {venv['env_location'] or 'unknown'}")
-                if venv.get('details', {}).get('has_uv_lock'):
-                    print(f"  - UV Lock: Yes")
+                if venv.get("details", {}).get("has_uv_lock"):
+                    print("  - UV Lock: Yes")
             print()
 
         if "project_structure" in result:
             struct = result["project_structure"]
-            print(f"Project Structure:")
-            print(f"  - pyproject.toml: {'Yes' if struct['has_pyproject_toml'] else 'No'}")
+            print("Project Structure:")
+            print(
+                f"  - pyproject.toml: {'Yes' if struct['has_pyproject_toml'] else 'No'}"
+            )
             print(f"  - src/ directory: {'Yes' if struct['has_src_dir'] else 'No'}")
             print(f"  - tests/ directory: {'Yes' if struct['has_tests_dir'] else 'No'}")
             print(f"  - Language: {struct['language'] or 'unknown'}")
@@ -494,10 +492,12 @@ def main():
 
         if "project_age" in result:
             age = result["project_age"]
-            print(f"Project Status: {'New Project' if age['is_new_project'] else 'Old Project'}")
+            print(
+                f"Project Status: {'New Project' if age['is_new_project'] else 'Old Project'}"
+            )
             print(f"  - Confidence: {age['confidence']}")
             if age["reasoning"]:
-                print(f"  - Reasons:")
+                print("  - Reasons:")
                 for reason in age["reasoning"]:
                     print(f"    • {reason}")
 

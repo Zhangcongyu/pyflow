@@ -22,7 +22,19 @@
 
 **Tool**: pyflow-brainstorming
 
-**执行**: 探索用户需求，明确功能边界
+**参数**: `--version-dir {{VERSION_DIR}} {{GOAL}}`
+
+**执行**: 探索用户需求，明确功能边界，输出到版本化需求文档
+
+**调用**:
+```
+Skill(
+    skill="pyflow-brainstorming",
+    args="--version-dir {{VERSION_DIR}} {{GOAL}}"
+)
+```
+
+**输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
 
 **CHECKLIST**:
 - [ ] 需求分析完成
@@ -30,23 +42,66 @@
 - [ ] 技术方案确认
 - [ ] 需求文档已创建到 pjflow/{{VERSION_DIR}}/requirements.md
 
-**后置步骤**: 创建版本化需求文档
-```python
-# 使用 document_manager 创建需求文档
-from scripts.document_manager import DocumentManager, create_requirements_template
+---
 
-doc_manager = DocumentManager(Path("./pjflow"))
-requirements_content = create_requirements_template(
-    goal="{{GOAL}}",
-    project_type="{{PROJECT_STATUS}}",
-    complexity="{{COMPLEXITY}}"
-)
-doc_manager.create_versioned_requirements(
-    "{{VERSION_DIR}}",
-    requirements_content,
-    overwrite=False
+## Step 5.5: 简单项目需求文档生成
+
+**适用场景**: `{{PROJECT_STATUS}}` == new 且 `{{COMPLEXITY}}` == simple
+
+**执行时机**: Phase 1 完成后
+
+**说明**: Simple 项目不需要 Phase 0 brainstorming，直接生成需求文档模板
+
+**工具**: Write
+
+**执行**:
+```
+Write(
+    file_path="pjflow/{{VERSION_DIR}}/requirements.md",
+    content="""# Requirements
+
+**Project Type**: {{PROJECT_STATUS}}
+**Complexity**: simple
+**Goal**: {{GOAL}}
+
+---
+
+## Project Overview
+
+{{GOAL}}
+
+## Core Features
+
+### Feature 1
+- Description:
+- Acceptance Criteria:
+- Priority:
+
+## Technical Requirements
+
+- Performance requirements:
+- Security requirements:
+- Compatibility requirements:
+
+## Success Criteria
+
+1.
+2.
+3.
+
+---
+*Created: {{PROJECT_STATUS}} - simple*
+"""
 )
 ```
+
+**输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
+
+**CHECKLIST**:
+- [ ] 需求文档已创建
+- [ ] 输出路径正确
+
+**Skip if**: `{{COMPLEXITY}}` != simple（medium/complex 项目通过 Phase 0 brainstorming 生成需求）
 
 ---
 

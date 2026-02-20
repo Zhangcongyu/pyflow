@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. Receives --version-dir <VERSION_DIR> parameter for versioned requirements output."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -9,7 +9,43 @@ description: "You MUST use this before any creative work - creating features, bu
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+Start by understanding the current project state, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+
+## Parameters
+
+**Receives**: `--version-dir <VERSION_DIR>` + user request
+
+**Example**:
+```
+--version-dir v0_initial 创建一个待办事项应用
+--version-dir v1_auth_api 添加用户认证功能
+```
+
+**Output path**: Determined by `--version-dir` parameter:
+- With `--version-dir`: `pjflow/{VERSION_DIR}/requirements.md`
+- Without `--version-dir`: `./pjflow/requirements.md.tmp` (temporary file for executor to move)
+
+## Parameter Parsing
+
+**Step 1**: Parse args to extract `--version-dir` and user request
+```python
+# Parse --version-dir if present
+if "--version-dir" in args:
+    parts = args.split("--version-dir", 1)[1].strip().split(None, 1)
+    version_dir = parts[0]
+    user_request = parts[1] if len(parts) > 1 else ""
+else:
+    version_dir = None
+    user_request = args
+```
+
+**Step 2**: Determine output path
+```python
+if version_dir:
+    output_path = f"pjflow/{version_dir}/requirements.md"
+else:
+    output_path = "./pjflow/requirements.md.tmp"
+```
 
 ## The Process
 
@@ -35,7 +71,7 @@ Start by understanding the current project context, then ask questions one at a 
 ## After the Design
 
 **Documentation:**
-- Write the validated design to `./pjflow/requirements.md`
+- Write the validated design to the output path determined by `--version-dir` parameter
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 

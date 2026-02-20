@@ -142,7 +142,7 @@ class GoComplianceChecker(BaseComplianceChecker):
                                     )
                                 )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:
@@ -271,7 +271,7 @@ class GoComplianceChecker(BaseComplianceChecker):
                                 )
                             )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:

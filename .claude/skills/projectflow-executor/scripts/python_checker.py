@@ -197,7 +197,7 @@ class PythonComplianceChecker(BaseComplianceChecker):
                                 )
                             )
 
-                except (json.JSONDecodeError, IOError):
+                except (OSError, json.JSONDecodeError):
                     pass
 
         except FileNotFoundError:
@@ -271,7 +271,7 @@ class PythonComplianceChecker(BaseComplianceChecker):
                                 )
                             )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:
@@ -346,7 +346,7 @@ class PythonComplianceChecker(BaseComplianceChecker):
                                     )
                                 )
 
-                except (UnicodeDecodeError, IOError):
+                except (OSError, UnicodeDecodeError):
                     continue
 
         except Exception:
