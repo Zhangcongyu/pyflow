@@ -28,6 +28,27 @@
 - [ ] 需求分析完成
 - [ ] 功能边界明确
 - [ ] 技术方案确认
+- [ ] 需求文档已创建到 pjflow/{{VERSION_DIR}}/requirements.md
+
+**后置步骤**: 创建版本化需求文档
+```python
+# 使用 document_manager 创建需求文档
+from pathlib import Path
+sys.path.insert(0, '.claude/skills/projectflow-executor')
+from scripts.document_manager import DocumentManager, create_requirements_template
+
+doc_manager = DocumentManager(Path("./pjflow"))
+requirements_content = create_requirements_template(
+    goal="{{GOAL}}",
+    project_type="{{PROJECT_STATUS}}",
+    complexity="{{COMPLEXITY}}"
+)
+doc_manager.create_versioned_requirements(
+    "{{VERSION_DIR}}",
+    requirements_content,
+    overwrite=False
+)
+```
 
 ---
 
@@ -42,6 +63,13 @@
 **CHECKLIST**:
 - [ ] Constitution 创建/更新
 - [ ] 项目规则定义
+- [ ] 共享文档已创建
+
+**后置步骤**: 验证宪法文档创建
+```bash
+# 确认宪法文档已创建
+ls -la pjflow/constitution.md
+```
 
 **Skip if**: 老项目（`{{PROJECT_STATUS}}` == add-feature）
 
@@ -580,11 +608,37 @@ touch src/new_feature/index.ts
 
 **Tool**: pyflow-tdd-cycle
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 单次 TDD 循环（RED → GREEN → REFACTOR）
 
 **调用**:
 ```
-Skill(skill="pyflow-tdd-cycle", args="{{GOAL}} --single-cycle")
+Skill(skill="pyflow-tdd-cycle", args="""
+{{GOAL}} --single-cycle
+
+## 强制约束（必须遵守）
+
+### 项目宪法
+{constitution}
+
+### 需求文档
+{requirements}
+
+违反上述约束的代码将被拒绝！
+""")
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase tdd
 ```
 
 **CHECKLIST**:
@@ -593,6 +647,8 @@ Skill(skill="pyflow-tdd-cycle", args="{{GOAL}} --single-cycle")
 - [ ] REFACTOR Phase: 代码重构
 - [ ] 所有测试通过
 - [ ] 无手动编码
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -606,6 +662,12 @@ Skill(skill="pyflow-tdd-cycle", args="{{GOAL}} --single-cycle")
 
 **Tool Type**: Task (subagent_type)
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 生成完整测试套件
 
 **调用**:
@@ -613,9 +675,29 @@ Skill(skill="pyflow-tdd-cycle", args="{{GOAL}} --single-cycle")
 Task(
     subagent_type="pyflow-test-automator",
     subject="生成测试套件",
-    description="为 {{GOAL}} 生成完整测试套件",
+    description="""
+    为 {{GOAL}} 生成完整测试套件
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的测试代码将被拒绝！
+    """,
     activeForm="生成测试套件"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase red
 ```
 
 **CHECKLIST**:
@@ -623,6 +705,8 @@ Task(
 - [ ] Test structure defined
 - [ ] Test cases cover requirements
 - [ ] Compliance: Tests cover Requirements and Constitution standards
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -638,6 +722,12 @@ Task(
 
 **Tool Type**: Task (subagent_type)
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 实现所有功能使测试通过
 
 **调用**:
@@ -645,9 +735,29 @@ Task(
 Task(
     subagent_type="pyflow-frontend-developer",  // ← Next.js/React 时使用
     subject="实现功能使测试通过",
-    description="实现所有功能使测试通过",
+    description="""
+    实现所有功能使测试通过
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="实现功能"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase green
 ```
 
 **CHECKLIST**:
@@ -655,6 +765,8 @@ Task(
 - [ ] All tests pass
 - [ ] Code follows constitution
 - [ ] Compliance: Code within Requirements scope, follows Constitution standards
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -664,6 +776,12 @@ Task(
 
 **Tool Type**: Task (subagent_type)
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 优化代码结构和质量
 
 **调用**:
@@ -671,9 +789,29 @@ Task(
 Task(
     subagent_type="pyflow-typescript-pro",
     subject="重构优化代码",
-    description="优化代码结构和质量",
+    description="""
+    优化代码结构和质量
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="重构优化"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase refactor
 ```
 
 **CHECKLIST**:
@@ -682,6 +820,8 @@ Task(
 - [ ] Code quality improved
 - [ ] Performance optimized (if needed)
 - [ ] Compliance: Refactor preserves Constitution compliance
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -693,14 +833,40 @@ Task(
 
 **Tool**: pyflow-test-automator
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **调用**:
 ```
 Task(
     subagent_type="pyflow-test-automator",
     subject="生成完整测试套件",
-    description="为 {{GOAL}} 生成单元测试、集成测试、性能测试、安全测试",
+    description="""
+    为 {{GOAL}} 生成单元测试、集成测试、性能测试、安全测试
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的测试代码将被拒绝！
+    """,
     activeForm="生成测试套件"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase red
 ```
 
 **CHECKLIST**:
@@ -709,6 +875,8 @@ Task(
 - [ ] Performance tests defined
 - [ ] Security tests defined
 - [ ] Compliance: Tests cover Requirements and Constitution standards
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -722,14 +890,40 @@ Task(
 - Express 项目 → pyflow-typescript-pro
 - 其他 TypeScript 项目 → pyflow-typescript-pro
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **调用**:
 ```
 Task(
     subagent_type="pyflow-frontend-developer",  // ← Next.js/React 时使用
     subject="实现基础功能",
-    description="实现所有功能使测试通过",
+    description="""
+    实现所有功能使测试通过
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="实现基础功能"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase green
 ```
 
 **CHECKLIST**:
@@ -737,12 +931,20 @@ Task(
 - [ ] All unit tests pass
 - [ ] Code follows constitution
 - [ ] Compliance: Code within Requirements scope, follows Constitution standards
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
 #### Phase 4.3: GREEN - 异步优化（如需要）
 
 **Tool**: pyflow-typescript-pro
+
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
 
 **执行**: 添加异步支持提高性能
 
@@ -751,9 +953,29 @@ Task(
 Task(
     subagent_type="pyflow-typescript-pro",
     subject="添加异步支持以提高性能",
-    description="添加异步/并发支持提高性能",
+    description="""
+    添加异步/并发支持提高性能
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="优化异步性能"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase async
 ```
 
 **CHECKLIST**:
@@ -761,6 +983,8 @@ Task(
 - [ ] All tests still pass
 - [ ] Performance improved
 - [ ] Compliance: Async patterns follow Constitution requirements
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 **Skip if**: `{{PROJECT_STATUS}}` == new 或项目不需要异步
 
@@ -770,6 +994,12 @@ Task(
 
 **Tool**: pyflow-typescript-performance-engineer
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 分析并优化性能瓶颈
 
 **调用**:
@@ -777,9 +1007,29 @@ Task(
 Task(
     subagent_type="pyflow-typescript-performance-engineer",
     subject="分析并优化性能瓶颈",
-    description="分析并优化性能瓶颈",
+    description="""
+    分析并优化性能瓶颈
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="优化性能"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase performance
 ```
 
 **CHECKLIST**:
@@ -788,6 +1038,8 @@ Task(
 - [ ] Optimizations applied
 - [ ] Performance targets met
 - [ ] Compliance: Performance optimizations meet Requirements targets
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 **Skip if**: 项目没有性能要求
 
@@ -797,6 +1049,12 @@ Task(
 
 **Tool**: pyflow-typescript-performance-engineer
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **执行**: 应用高级优化技术
 
 **调用**:
@@ -804,9 +1062,29 @@ Task(
 Task(
     subagent_type="pyflow-typescript-performance-engineer",
     subject="深度性能优化",
-    description="应用高级优化技术",
+    description="""
+    应用高级优化技术
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="深度优化"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase deep-refactor
 ```
 
 **CHECKLIST**:
@@ -815,12 +1093,20 @@ Task(
 - [ ] All tests still pass
 - [ ] Performance significantly improved
 - [ ] Compliance: Refactor preserves Constitution compliance
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
 #### Phase 4.6: REFACTOR - 最终清理
 
 **Tool**: pyflow-typescript-pro
+
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
 
 **执行**: 清理代码、更新文档
 
@@ -829,9 +1115,29 @@ Task(
 Task(
     subagent_type="pyflow-typescript-pro",
     subject="最终代码清理",
-    description="清理代码、更新文档、确保代码质量",
+    description="""
+    清理代码、更新文档、确保代码质量
+
+    ## 强制约束（必须遵守）
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    违反上述约束的代码将被拒绝！
+    """,
     activeForm="清理代码"
 )
+```
+
+**后置步骤**: 合规检查
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase final
 ```
 
 **CHECKLIST**:
@@ -840,6 +1146,8 @@ Task(
 - [ ] All tests pass
 - [ ] Code quality excellent
 - [ ] Compliance: Final code follows all Constitution standards
+- [ ] Compliance check passed
+- [ ] Compliance report generated
 
 ---
 
@@ -851,6 +1159,12 @@ Task(
 
 #### 5.1 质量检查
 
+**前置步骤**: 读取合规文档
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
 **Tool**: Bash
 
 **执行**:
@@ -858,6 +1172,12 @@ Task(
 npm test
 npm run lint
 npm run typecheck
+
+# 运行完整合规检查
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language typescript \
+    --version-dir {{VERSION_DIR}} \
+    --phase review
 ```
 
 **CHECKLIST**:
@@ -865,10 +1185,19 @@ npm run typecheck
 - [ ] Code style checks pass (eslint)
 - [ ] Type checks pass (tsc)
 - [ ] Compliance: Code follows constitution standards
+- [ ] Compliance report verified
+- [ ] No critical/high issues
 
 ---
 
 #### 5.2 代码审核
+
+**前置步骤**: 读取合规文档和最新合规报告
+```python
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+compliance_report = Read("./pjflow/{{VERSION_DIR}}/compliance_report.md")
+```
 
 **Tool**: pyflow-code-reviewer
 
@@ -879,7 +1208,22 @@ npm run typecheck
 Task(
     subagent_type="pyflow-code-reviewer",
     subject="审核代码",
-    description="审核整个代码库",
+    description="""
+    审核整个代码库
+
+    ## 参考文档
+
+    ### 项目宪法
+    {constitution}
+
+    ### 需求文档
+    {requirements}
+
+    ### 合规报告
+    {compliance_report}
+
+    请验证代码是否符合宪法和需求要求，并审核合规报告中的问题。
+    """,
     activeForm="审核代码"
 )
 ```
@@ -889,6 +1233,7 @@ Task(
 - [ ] Issues documented (if any)
 - [ ] Constitution compliance verified
 - [ ] Requirements compliance verified
+- [ ] Compliance issues reviewed (if any)
 
 ---
 
@@ -1157,6 +1502,58 @@ git commit -m "feat: implement feature"
 
 ---
 
-**版本**: 1.0.0
+## 合规性检查说明
+
+**自动化合规检查**: 每个重要阶段完成后，系统会自动运行合规检查脚本
+
+### 检查内容
+
+1. **代码风格**: eslint 检查
+2. **类型注解**: tsc 类型检查
+3. **测试覆盖率**: vitest 覆盖率检查
+4. **错误处理**: 空catch块检测
+5. **宪法合规**: 代码是否遵循项目宪法规则
+6. **需求合规**: 代码是否超出需求范围
+
+### 合规报告
+
+每次检查后生成合规报告到 `pjflow/{{VERSION_DIR}}/compliance_report.md`
+
+### 问题等级
+
+- **Critical**: 必须修复才能继续
+- **High**: 强烈建议修复
+- **Medium**: 建议修复
+- **Low**: 可选修复
+
+### 文档注入模式
+
+所有 Task 调用都会注入项目宪法和需求文档，确保 sub-agent 遵守约束：
+
+```python
+# 读取文档
+constitution = Read("./pjflow/constitution.md")
+requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
+
+# 注入到 prompt
+enhanced_prompt = f"""
+{original_task_description}
+
+## 强制约束（必须遵守）
+
+### 项目宪法
+{constitution}
+
+### 需求文档
+{requirements}
+
+违反上述约束的代码将被拒绝！
+"""
+```
+
+---
+
+**版本**: 2.0.0
 **用途**: ProjectFlow Planner - TypeScript 完整计划模板
 **适用语言**: TypeScript (package.json, tsconfig.json)
+**更新内容**: 添加合规性检查集成

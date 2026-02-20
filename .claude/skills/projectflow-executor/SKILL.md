@@ -19,15 +19,28 @@ description: |
    ↓
 找到下一个 pending 的 Phase
    ↓
-【强制验证】读取需求文档和宪法文件
+【Step 0】准备合规检查环境
+   - 检测项目语言类型
+   - 加载对应的合规检查器
+   - 读取版本化的需求文档
+   - 读取共享的宪法文档
    ↓
-调用对应的 Tool（带入文档上下文）
+【Step 1】更新 Phase 状态为 in_progress
    ↓
-【强制验证】检查输出合规性
+【Step 2】调用 Tool（带入文档上下文）
    ↓
-更新 CHECKLIST.md
-更新 progress.md
-标记 Phase 为 complete
+【Step 3】执行合规检查（Phase 4/5 时）
+   - 运行对应语言的合规检查器
+   - 生成合规报告到 pjflow/{VERSION_DIR}/compliance_report.md
+   ↓
+【Step 4】验证合规性
+   - 检查是否有 critical 级别问题
+   - 如有，记录并询问用户是否继续
+   ↓
+【Step 5】更新状态和记录
+   - 更新 CHECKLIST.md
+   - 更新 progress.md
+   - 标记 Phase 为 complete
    ↓
 所有 Phase 完成？
 ```
@@ -37,8 +50,10 @@ description: |
 ### 执行前检查
 
 ```
-□ 已读取 pjflow/constitution.md
-□ 已读取 pjflow/requirements.md（如存在）
+□ 已读取 pjflow/constitution.md（共享宪法）
+□ 已读取 pjflow/{VERSION_DIR}/requirements.md（版本化需求）
+□ 已检测项目语言类型
+□ 已准备合规检查脚本
 □ 已理解当前 Phase 的 Tool 和参数
 □ 已准备好对应的工具调用
 □ 确认不会手动编写业务代码
@@ -49,7 +64,10 @@ description: |
 ```
 □ Tool 执行完成，无错误
 □ 输出符合 constitution.md 要求
-□ 输出符合 requirements.md 要求
+□ 输出符合 requirements.md 要求（Phase 4/5）
+□ 合规检查已执行（Phase 4/5）
+□ 合规报告已生成（Phase 4/5）
+□ Critical/High 问题已处理（如存在）
 □ CHECKLIST.md 已更新
 □ progress.md 已更新
 □ Phase 状态已标记为 complete
@@ -247,9 +265,135 @@ Phase 4 (TDD 执行)      → 业务逻辑 → 调用 pyflow-tdd-cycle ❌
 
 ---
 
-**版本**: 4.0.0
-**用途**: ProjectFlow 架构 - 执行器（语言无关）
+**版本**: 5.0.0
+**用途**: ProjectFlow 架构 - 执行器（语言无关，支持自动化合规检查）
 **更新**:
+- 🆕 实现自动化合规检查框架（Python, TypeScript, Go）
+- 🆕 支持版本化需求文档（每个版本目录独立的 requirements.md）
+- 🆕 集成合规检查到 Phase 4/5 执行流程
+- 🆕 生成合规报告到 pjflow/{VERSION_DIR}/compliance_report.md
 - 强化每阶段强制检查，严格落实需求和宪法文件
 - 扩展 Phase 3 旧项目工作流程（Git 分支、依赖管理、系统文件更新、新功能文件创建）
 - 完善 CHECKLIST 更新要求
+
+---
+
+## 📦 文档结构变更（版本 5.0.0）
+
+### 版本化需求文档
+
+**新结构**:
+```
+pjflow/
+├── constitution.md                 # 共享宪法（不变）
+│
+├── v0_initial/
+│   ├── task_plan.md
+│   ├── progress.md
+│   ├── findings.md
+│   ├── requirements.md            # 新增：v0 需求文档
+│   └── compliance_report.md       # 新增：v0 合规报告
+│
+└── v1_add_feature/
+    ├── task_plan.md
+    ├── progress.md
+    ├── findings.md
+    ├── requirements.md            # 新增：v1 需求文档
+    └── compliance_report.md       # 新增：v1 合规报告
+```
+
+**迁移脚本位置**: `.claude/skills/projectflow-executor/scripts/migrate_requirements.py`
+
+---
+
+## 🤖 自动化合规检查
+
+### 支持的语言
+
+| 语言 | 检查器 | 工具 |
+|------|--------|------|
+| Python | `PythonComplianceChecker` | ruff, mypy, pytest |
+| TypeScript | `TypeScriptComplianceChecker` | eslint, tsc, vitest |
+| Go | `GoComplianceChecker` | gofmt, go vet, go test |
+
+### 合规检查内容
+
+1. **宪法合规** (constitution.md)
+   - 文件存在性检查
+   - Coding Standards 章节检查
+
+2. **需求文档合规** (requirements.md)
+   - 文件存在性检查
+   - 内容完整性检查
+
+3. **代码风格检查**
+   - Python: ruff
+   - TypeScript: eslint
+   - Go: gofmt + go vet
+
+4. **类型注解检查**
+   - Python: mypy
+   - TypeScript: tsc
+   - Go: interface{} 过度使用
+
+5. **测试覆盖率检查**
+   - Python: pytest --cov
+   - TypeScript: vitest --coverage
+   - Go: go test -cover
+
+6. **错误处理检查**
+   - 裸 except/空 catch 块检测
+   - 忽略的错误返回值检测
+
+### 执行合规检查
+
+**在 Phase 4 和 Phase 5 后自动执行**:
+
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language auto \
+    --project-root . \
+    --version-dir v0_initial \
+    --phase green
+```
+
+**输出位置**: `pjflow/{VERSION_DIR}/compliance_report.md`
+
+### 违规处理
+
+- **Critical**: 必须修复才能继续
+- **High**: 建议修复，可选择性继续
+- **Medium/Low**: 记录但不阻止
+
+---
+
+## 🔧 合规检查脚本
+
+### 可用脚本
+
+| 脚本 | 用途 |
+|------|------|
+| `check_compliance.py` | 运行合规检查并生成报告 |
+| `document_manager.py` | 管理版本化需求文档 |
+| `base_checker.py` | 基础检查器抽象类 |
+| `python_checker.py` | Python 合规检查器 |
+| `typescript_checker.py` | TypeScript 合规检查器 |
+| `go_checker.py` | Go 合规检查器 |
+| `checker_factory.py` | 检查器工厂 |
+| `compliance_reporter.py` | 报告生成器 |
+
+### 使用示例
+
+```bash
+# 自动检测语言并运行检查
+python .claude/skills/projectflow-executor/scripts/check_compliance.py
+
+# 指定语言
+python .claude/skills/projectflow-executor/scripts/check_compliance.py --language python
+
+# 指定版本目录
+python .claude/skills/projectflow-executor/scripts/check_compliance.py --version-dir v0_initial
+
+# 查看帮助
+python .claude/skills/projectflow-executor/scripts/check_compliance.py --help
+```
