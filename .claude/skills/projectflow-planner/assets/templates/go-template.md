@@ -249,10 +249,10 @@ EOF
 
 | 关键词 | 项目类型 | 目录结构 | 专用 Agent |
 |--------|----------|----------|------------|
-| CLI, 命令行, 工具 | **cli** | cmd/ + internal/ | python-development:python-pro |
-| Library, 库, SDK | **library** | internal/ + pkg/ | python-development:python-pro |
-| Web, API, Server | **web** | cmd/server/ + internal/ + pkg/ | python-development:python-pro |
-| Microservice, 微服务 | **microservice** | cmd/ + internal/ + pkg/ | python-development:python-pro |
+| CLI, 命令行, 工具 | **cli** | cmd/ + internal/ | pyflow-python-pro |
+| Library, 库, SDK | **library** | internal/ + pkg/ | pyflow-python-pro |
+| Web, API, Server | **web** | cmd/server/ + internal/ + pkg/ | pyflow-python-pro |
+| Microservice, 微服务 | **microservice** | cmd/ + internal/ + pkg/ | pyflow-python-pro |
 
 **CLI 架构** (simple/medium):
 ```
@@ -602,7 +602,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Skill(skill="pyflow-tdd-cycle", args="""
 {{GOAL}} --single-cycle
 
-## 强制约束（必须遵守）
+## 🚨 强制约束（必须遵守）
 
 ### 项目宪法
 {constitution}
@@ -610,7 +610,7 @@ Skill(skill="pyflow-tdd-cycle", args="""
 ### 需求文档
 {requirements}
 
-违反上述约束的代码将被拒绝！
+**重要**: 违反上述约束的代码/测试将被拒绝！
 """)
 ```
 
@@ -659,7 +659,7 @@ Task(
     description="""
     为 {{GOAL}} 生成完整测试套件
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
     ### 项目宪法
     {constitution}
@@ -667,7 +667,7 @@ Task(
     ### 需求文档
     {requirements}
 
-    违反上述约束的测试代码将被拒绝！
+    **重要**: 违反上述约束的代码/测试将被拒绝！
     """,
     activeForm="生成测试套件"
 )
@@ -693,7 +693,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.2: GREEN - 实现功能
 
-**Tool**: python-development:python-pro
+**Tool**: pyflow-python-pro
 
 **Tool Type**: Task (subagent_type)
 
@@ -708,7 +708,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="实现功能使测试通过",
     description="""
     实现所有功能使测试通过
@@ -747,7 +747,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.3: REFACTOR - 重构代码
 
-**Tool**: python-development:python-pro
+**Tool**: pyflow-python-pro
 
 **Tool Type**: Task (subagent_type)
 
@@ -762,7 +762,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="重构优化代码",
     description="""
     优化代码结构和质量
@@ -822,7 +822,7 @@ Task(
     description="""
     为 {{GOAL}} 生成单元测试、集成测试、性能测试、并发测试
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
     ### 项目宪法
     {constitution}
@@ -830,7 +830,7 @@ Task(
     ### 需求文档
     {requirements}
 
-    违反上述约束的测试代码将被拒绝！
+    **重要**: 违反上述约束的代码/测试将被拒绝！
     """,
     activeForm="生成测试套件"
 )
@@ -857,7 +857,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.2: GREEN - 基础实现
 
-**Tool**: python-development:python-pro
+**Tool**: pyflow-python-pro
 
 **前置步骤**: 读取合规文档
 ```python
@@ -868,7 +868,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="实现基础功能",
     description="""
     实现所有功能使测试通过
@@ -907,7 +907,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.3: GREEN - 并发优化（如需要）
 
-**Tool**: python-development:python-pro
+**Tool**: pyflow-python-pro
 
 **执行**: 添加并发支持提高性能
 
@@ -920,7 +920,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="添加并发支持以提高性能",
     description="""
     添加 goroutine/channel 支持
@@ -961,7 +961,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.4: GREEN - 性能优化
 
-**Tool**: python-development:python-performance-engineer
+**Tool**: pyflow-python-performance-optimization
 
 **前置步骤**: 读取合规文档
 ```python
@@ -974,7 +974,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-performance-engineer",
+    subagent_type="pyflow-python-performance-optimization",
     subject="分析并优化性能瓶颈",
     description="""
     分析并优化性能瓶颈
@@ -1016,7 +1016,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.5: REFACTOR - 深度优化
 
-**Tool**: python-development:python-performance-engineer
+**Tool**: pyflow-python-performance-optimization
 
 **前置步骤**: 读取合规文档
 ```python
@@ -1029,7 +1029,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-performance-engineer",
+    subagent_type="pyflow-python-performance-optimization",
     subject="深度性能优化",
     description="""
     应用高级优化技术
@@ -1069,7 +1069,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.6: REFACTOR - 最终清理
 
-**Tool**: python-development:python-pro
+**Tool**: pyflow-python-pro
 
 **前置步骤**: 读取合规文档
 ```python
@@ -1082,7 +1082,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="最终代码清理",
     description="""
     清理代码、更新文档、确保代码质量
@@ -1388,9 +1388,9 @@ Task(
     description="为 {{GOAL}} 生成完整测试套件"
 )
 
-// 调用 python-development:python-pro 实现 Go 功能
+// 调用 pyflow-python-pro 实现 Go 功能
 Task(
-    subagent_type="python-development:python-pro",
+    subagent_type="pyflow-python-pro",
     subject="实现功能使测试通过",
     description="实现所有功能使测试通过"
 )
@@ -1475,7 +1475,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 enhanced_prompt = f"""
 {original_task_description}
 
-## 强制约束（必须遵守）
+## 🚨 强制约束（必须遵守）
 
 ### 项目宪法
 {constitution}
@@ -1483,7 +1483,7 @@ enhanced_prompt = f"""
 ### 需求文档
 {requirements}
 
-违反上述约束的代码将被拒绝！
+**重要**: 违反上述约束的代码将被拒绝！
 """
 ```
 

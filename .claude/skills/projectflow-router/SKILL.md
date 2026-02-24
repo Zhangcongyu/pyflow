@@ -7,7 +7,7 @@ description: |
   核心职责: 纯检测器，只负责参数传递和路由，不执行任何实现工作
 ---
 
-# Projectflow Router
+# ProjectFlow Router
 
 ## 职责
 
@@ -20,7 +20,7 @@ description: |
 ## 执行流程
 
 ```
-用户请求 → 解析明确参数 → 自动检测缺失参数 → 展示结果 → 用户确认 → 调用 projectflow-planner
+用户请求 → 解析明确参数 → 自动检测缺失参数 → 展示结果 → 用户确认 → 调用 planner
 ```
 
 ## 判断优先级
@@ -41,33 +41,20 @@ description: |
 
 ### 维度 1: 项目类型（新 vs 老）
 
-**新项目信号**: "创建"、"新建"、"build from scratch"、目录为空、无项目配置文件
+**新项目信号**: "创建"、"新建"、"build from scratch"
 
-**老项目信号**: "添加"、"新增"、"extend"、"add feature"、存在项目配置文件
+**老项目信号**: "添加"、"新增"、"extend"、"add feature"
 
 ### 维度 2: 项目复杂度
 
-**Step 1: 检查用户明确指定**
-```
-用户输入包含以下任一形式时，直接使用：
-- 参数形式: --simple, --medium, --complex
+**Step 1**: 检查用户明确指定
+- 参数形式: `--simple`, `--medium`, `--complex`
 - 明确描述: "简单项目", "中等规模", "复杂系统"
-```
 
-**Step 2: 无明确指定时，使用关键词匹配**
+**Step 2**: 无明确指定时，使用关键词匹配
 - **简单**: "简单"、"小的"、"quick"、"单个功能"、"工具"、"utility"
 - **中等**: "中等"、"几个功能"、"API"、"CRUD"、"数据处理"、"service"
 - **复杂**: "复杂"、"大型的"、"完整系统"、"平台"、"框架"、"高性能"、"分布式"
-
-**Step 3: 展示检测结果并请求确认**
-```
-检测到项目属性:
-• 项目类型: 新项目 (--new)
-• 复杂度: 简单 (--simple) [基于关键词: "工具"]
-• 语言: Python (--python)
-
-检测依据: 用户提到"创建工具"，匹配简单项目特征
-```
 
 ### 维度 3: 语言类型
 
@@ -81,9 +68,9 @@ description: |
 
 ## 用户交互与确认
 
-### 交互确认流程
+检测完成后，使用 **AskUserQuestion** 工具展示结果并请求确认。
 
-检测完成后，使用 **AskUserQuestion** 工具展示结果并请求确认：
+### 交互示例
 
 ```
 检测到项目属性:
@@ -97,27 +84,14 @@ description: |
 - 否，修正参数
 ```
 
-### 允许用户修正
-
-如果用户选择修正，提供选项让用户调整：
-- 项目类型: 新项目 / 老项目添加功能
-- 复杂度: 简单 / 中等 / 复杂
-- 语言: Python / TypeScript / Go
-
 ### 确认后调用
 
 使用 **Skill 工具**传递最终确认的参数给 projectflow-planner：
 
-```
+```python
 Skill(skill="projectflow-planner", args="--new --simple --python 用户原始需求")
 ```
 
-## 路由示例
+## 路由表
 
 详见 [references/routing-table.md](references/routing-table.md) 获取完整的参数组合和调用示例。
-
----
-
-**版本**: 5.0.0
-**用途**: ProjectFlow Router - 三维检测器（语言无关）
-**更新**: 添加用户明确指定优先原则和交互确认流程

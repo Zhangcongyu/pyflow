@@ -674,7 +674,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Skill(skill="pyflow-tdd-cycle", args="""
 {{GOAL}} --single-cycle
 
-## 强制约束（必须遵守）
+## 🚨 强制约束（必须遵守）
 
 ### 项目宪法
 {constitution}
@@ -682,7 +682,7 @@ Skill(skill="pyflow-tdd-cycle", args="""
 ### 需求文档
 {requirements}
 
-违反上述约束的代码将被拒绝！
+**重要**: 违反上述约束的代码/测试将被拒绝！
 """)
 ```
 
@@ -731,7 +731,7 @@ Task(
     description="""
     为 {{GOAL}} 生成完整测试套件
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
     ### 项目宪法
     {constitution}
@@ -739,7 +739,7 @@ Task(
     ### 需求文档
     {requirements}
 
-    违反上述约束的测试代码将被拒绝！
+    **重要**: 违反上述约束的代码/测试将被拒绝！
     """,
     activeForm="生成测试套件"
 )
@@ -900,7 +900,7 @@ Task(
     description="""
     为 {{GOAL}} 生成单元测试、集成测试、性能测试、安全测试
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
     ### 项目宪法
     {constitution}
@@ -908,7 +908,7 @@ Task(
     ### 需求文档
     {requirements}
 
-    违反上述约束的测试代码将被拒绝！
+    **重要**: 违反上述约束的代码/测试将被拒绝！
     """,
     activeForm="生成测试套件"
 )
@@ -1592,7 +1592,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 enhanced_prompt = f"""
 {original_task_description}
 
-## 强制约束（必须遵守）
+## 🚨 强制约束（必须遵守）
 
 ### 项目宪法
 {constitution}
@@ -1600,7 +1600,7 @@ enhanced_prompt = f"""
 ### 需求文档
 {requirements}
 
-违反上述约束的代码将被拒绝！
+**重要**: 违反上述约束的代码将被拒绝！
 """
 ```
 

@@ -2,10 +2,10 @@
 description: Execute comprehensive Test-Driven Development (TDD) workflow with strict red-green-refactor discipline. Use for implementing features or bugfixes with test-first methodology, ensuring quality through coordinated agent orchestration with fail-first verification, incremental implementation, and continuous refactoring.
 handoffs:
   - label: Code Review
-    agent: comprehensive-review:code-reviewer
+    agent: pyflow-code-reviewer
     prompt: Review the TDD implementation for code quality, test coverage, and adherence to TDD principles. Verify all tests pass and coverage meets requirements.
   - label: Security Audit
-    agent: comprehensive-review:security-auditor
+    agent: pyflow-security-auditor
     prompt: Perform security analysis of the TDD implementation, checking for vulnerabilities, security best practices, and compliance with security standards.
 ---
 
@@ -48,7 +48,7 @@ Automatically trigger refactoring when:
 
 ### 1. Requirements Analysis
 
-**Agent**: `comprehensive-review:architect-review`
+**Agent**: `pyflow-architect-review`
 
 **Prompt Template**:
 ```
@@ -74,7 +74,7 @@ Output: Comprehensive test specification document.
 
 ### 2. Test Architecture Design
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -107,7 +107,7 @@ Output: Test architecture document with fixture design and mock strategy.
 
 ### 3. Write Unit Tests (Failing)
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -140,7 +140,7 @@ Output: Complete test suite with all tests failing.
 
 ### 4. Verify Test Failure
 
-**Agent**: `tdd-workflows:code-reviewer`
+**Agent**: `pyflow-code-reviewer`
 
 **Prompt Template**:
 ```
@@ -169,7 +169,7 @@ Output: Test failure verification report with pass/fail status for each test.
 
 ### 5. Minimal Implementation
 
-**Agent**: `python-development:python-pro` (for Python) or appropriate language agent
+**Agent**: `pyflow-python-pro` (for Python) or appropriate language agent
 
 **Prompt Template**:
 ```
@@ -201,7 +201,7 @@ Output: Minimal working implementation.
 
 ### 6. Verify Test Success
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -233,7 +233,7 @@ Output: Test execution report, coverage metrics.
 
 ### 7. Code Refactoring
 
-**Agent**: `tdd-workflows:code-reviewer`
+**Agent**: `pyflow-code-reviewer`
 
 **Prompt Template**:
 ```
@@ -272,7 +272,7 @@ Output: Refactored code with refactoring report documenting changes.
 
 ### 8. Test Refactoring
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -306,7 +306,7 @@ Output: Refactored tests with improved test structure.
 
 ### 9. Write Integration Tests (Failing First)
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -338,7 +338,7 @@ Output: Failing integration tests.
 
 ### 10. Implement Integration
 
-**Agent**: `python-development:python-pro` (or appropriate language agent)
+**Agent**: `pyflow-python-pro` (or appropriate language agent)
 
 **Prompt Template**:
 ```
@@ -366,7 +366,7 @@ Output: Integration implementation.
 
 ### 11. Performance and Edge Case Tests
 
-**Agent**: `unit-testing:test-automator`
+**Agent**: `pyflow-test-automator`
 
 **Prompt Template**:
 ```
@@ -394,7 +394,7 @@ Output: Extended test suite with performance metrics.
 
 ### 12. Final Code Review
 
-**Agent**: `comprehensive-review:architect-review`
+**Agent**: `pyflow-architect-review`
 
 **Prompt Template**:
 ```
