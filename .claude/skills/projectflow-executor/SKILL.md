@@ -146,14 +146,28 @@ echo "已完成: $(grep '\[x\]' CHECKLIST.md | wc -l) 项"
 **版本目录结构**:
 ```
 pjflow/
-├── v0_initial/           ← 新建项目
-│   └── task_plan.md
+├── constitution.md              # 共享宪法（不变）
 │
-├── v1_add_feature/    ← 第1次新增功能
-│   └── task_plan.md
+├── v0_initial/                  ← 新建项目
+│   ├── task_plan.md
+│   ├── progress.md
+│   ├── findings.md
+│   ├── requirements.md
+│   └── compliance_report.md
 │
-└── vN_add_feature/       ← 第N次新增功能
-    └── task_plan.md
+├── v1_add_feature/              ← 第1次新增功能
+│   ├── task_plan.md
+│   ├── progress.md
+│   ├── findings.md
+│   ├── requirements.md
+│   └── compliance_report.md
+│
+└── vN_add_feature/              ← 第N次新增功能
+    ├── task_plan.md
+    ├── progress.md
+    ├── findings.md
+    ├── requirements.md
+    └── compliance_report.md
 ```
 
 **检测逻辑**:
@@ -175,9 +189,9 @@ task_plan_path="$latest_version_dir/task_plan.md"
 
 ```bash
 # 始终检查这些文档
-pjflow/constitution.md          # 项目宪法（共享）
-pjflow/requirements.md          # 需求文档（如存在）
-pjflow/{VERSION_DIR}/task_plan.md  # 当前执行计划
+pjflow/constitution.md               # 项目宪法（共享）
+pjflow/{VERSION_DIR}/requirements.md # 版本化需求文档（如存在）
+pjflow/{VERSION_DIR}/task_plan.md    # 当前执行计划
 ```
 
 **验证要点**:
@@ -239,8 +253,8 @@ Phase 4 (TDD 执行)      → 业务逻辑 → 调用 pyflow-tdd-cycle ❌
 
 **验证清单**:
 - Tool 执行无错误
-- 输出符合 constitution.md
-- 输出符合 requirements.md（如存在）
+- 输出符合 pjflow/constitution.md
+- 输出符合 pjflow/{VERSION_DIR}/requirements.md（如存在）
 - 文件/目录创建正确
 
 ### Step 8: 更新状态和记录

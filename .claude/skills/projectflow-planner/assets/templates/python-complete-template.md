@@ -366,6 +366,14 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 
+# 中文环境镜像源配置
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+default = true
+
+[tool.uv.pip]
+index-url = "https://repo.huaweicloud.com/repository/pypi/simple"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
