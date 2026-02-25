@@ -1,6 +1,6 @@
 # Python 项目完整计划模板
 
-**说明**: 此模板包含 Python 项目所有场景（simple/medium/complex）的完整 Phase 0-5 流程，planner 可直接阅读此文件生成可执行的 plan.md
+**说明**: 此模板包含 Python 项目所有 Phase 的框架。Planner 读取此模板生成 task_plan.md，Executor 根据计划执行。
 
 ---
 
@@ -10,29 +10,27 @@
 |--------|------|----------|
 | `{{GOAL}}` | 用户原始需求 | "创建一个 FastAPI 待办事项应用" |
 | `{{PROJECT_STATUS}}` | new / add-feature | new |
-| `{{COMPLEXITY}}` | simple / medium / complex | simple |
+| `{{COMPLEXITY}}` | simple / medium / complex | medium |
 | `{{VERSION_DIR}}` | 版本目录名称 | v0_initial / v1_add_feature |
-| `{{LANGUAGE}}` | 编程语言 | python |
+| `{{PROJECT_NAME}}` | 项目名称 | myapp |
 
 ---
 
 ## Phase 0: 需求互动
 
+### Phase 0.0: 需求探索
+
 **适用场景**: `{{COMPLEXITY}}` == medium 或 complex
+
+**执行顺序**: 优先执行
+
+**状态**: pending
 
 **Tool**: pyflow-brainstorming
 
 **参数**: `--version-dir {{VERSION_DIR}} {{GOAL}}`
 
-**执行**: 探索用户需求，明确功能边界，输出到版本化需求文档
-
-**调用**:
-```
-Skill(
-    skill="pyflow-brainstorming",
-    args="--version-dir {{VERSION_DIR}} {{GOAL}}"
-)
-```
+**目标**: 探索用户需求，明确功能边界，输出版本化需求文档
 
 **输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
 
@@ -40,22 +38,24 @@ Skill(
 - [ ] 需求分析完成
 - [ ] 功能边界明确
 - [ ] 技术方案确认
-- [ ] 需求文档已创建到 pjflow/{{VERSION_DIR}}/requirements.md
+- [ ] 需求文档已创建
+
+**Skip if**: `{{COMPLEXITY}}` == simple
 
 ---
 
-## Step 5.5: 简单项目需求文档生成
+### Phase 0.1: 简单项目需求文档生成
 
 **适用场景**: `{{PROJECT_STATUS}}` == new 且 `{{COMPLEXITY}}` == simple
 
-**执行时机**: Phase 1 完成后
+**执行顺序**: 优先执行（在 Phase 1 之前）
 
-**说明**: Simple 项目不需要 Phase 0 brainstorming，直接生成需求文档模板
+**Tool**: Write
 
-**工具**: Write
+**目标**: 生成简单项目的需求文档模板
 
-**执行**:
-```
+**内容**:
+\`\`\`
 Write(
     file_path="pjflow/{{VERSION_DIR}}/requirements.md",
     content="""# Requirements
@@ -77,6 +77,41 @@ Write(
 - Acceptance Criteria:
 - Priority:
 
+### Feature 2
+- Description:
+- Acceptance Criteria:
+- Priority:
+
+## Project Architecture
+
+### 目录结构
+
+```
+{{PROJECT_NAME}}/
+├── src/
+│   └── {{PROJECT_NAME}}/
+│       ├── __init__.py
+│       ├── __main__.py
+│       └── cli.py
+└── tests/
+    ├── __init__.py
+    └── test_{{PROJECT_NAME}}.py
+```
+
+### 技术栈
+
+- **语言**: Python 3.10+
+- **包管理**: uv
+- **CLI 框架**: typer
+- **测试框架**: pytest
+
+### 模块划分
+
+| 模块 | 文件 | 职责 |
+|------|------|------|
+| CLI | cli.py | 命令行界面，参数解析 |
+| Main | __main__.py | 程序入口 |
+
 ## Technical Requirements
 
 - Performance requirements:
@@ -93,31 +128,29 @@ Write(
 *Created: {{PROJECT_STATUS}} - simple*
 """
 )
-```
+\`\`\`
 
 **输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
 
 **CHECKLIST**:
-- [ ] 需求文档已创建
+- [ ] 需求文档模板已创建
 - [ ] 输出路径正确
 
-**Skip if**: `{{COMPLEXITY}}` != simple（medium/complex 项目通过 Phase 0 brainstorming 生成需求）
+**Skip if**: `{{COMPLEXITY}}` == medium 或 complex
 
 ---
 
 ## Phase 1: 项目规则
 
-**适用场景**: `{{PROJECT_STATUS}}` == new
-
 **Tool**: pyflow-constitution
 
-**执行**: 创建项目宪法文档 `pjflow/constitution.md`（共享，所有版本使用同一个）
+**目标**: 创建项目宪法文档，定义质量标准和开发规范
+
+**输出位置**: `pjflow/constitution.md`
 
 **CHECKLIST**:
-- [ ] Constitution 创建/更新
-- [ ] 项目规则定义
-
-**Skip if**: 老项目（`{{PROJECT_STATUS}}` == add-feature）
+- [ ] Constitution 已创建
+- [ ] 项目规则已定义
 
 ---
 
@@ -129,75 +162,165 @@ Write(
 
 **Tool**: Bash + 用户确认
 
-**检测逻辑**:
-```bash
-# 检测是否存在冲突目录
-CONFLICT_DIRS="src tests .venv venv __pycache__"
-CONFLICT_FILES="pyproject.toml setup.py requirements.txt package.json"
-
-for dir in $CONFLICT_DIRS; do
-    if [ -d "$dir" ]; then
-        HAS_CONFLICT=true
-        break
-    fi
-done
-
-if [ "$HAS_CONFLICT" = true ]; then
-    # 使用 AskUserQuestion 询问用户
-    问题："检测到目录中已存在项目文件 (src/, tests/ 等)，是否删除并重新创建？"
-    选项：
-      - "是，删除并重新创建"
-      - "否，取消操作"
-
-    # 根据用户选择执行
-fi
-```
+**目标**: 检测并清理冲突目录（src/, tests/, .venv 等）
 
 **CHECKLIST**:
 - [ ] 冲突检测完成
 - [ ] 用户确认
-- [ ] 清理命令准备
 - [ ] 目录已清理（如需要）
-
----
 
 ### 2.1 Git 仓库
 
+**Tool**: Bash + Write
+
+**目标**: 初始化 Git 仓库，创建 .gitignore
+
+**操作**:
+- 检测 Git 是否已存在
+- 如未初始化则执行 `git init` 和 `git branch -M main`
+- 创建 .gitignore 文件
+
+**CHECKLIST**:
+- [ ] Git 仓库初始化/确认
+- [ ] .gitignore 已创建
+
+### 2.2 项目架构
+
 **Tool**: Bash
 
-**前置检测**:
-- Git 是否已存在
-- 当前分支名称
+**目标**: 根据需求文档创建目录结构
 
-**判断逻辑**:
-```bash
-# 检查 Git 是否已初始化
-if git rev-parse --git-dir > /dev/null 2>&1; then
-    GIT_EXISTS=true
-else
-    GIT_EXISTS=false
-fi
+**操作**:
+- 从 requirements.md 提取目录结构
+- 创建目录和 __init__.py 文件
 
-echo "Git 仓库状态: $GIT_EXISTS"
+**CHECKLIST**:
+- [ ] 架构类型已选择
+- [ ] 目录结构已创建
+- [ ] __init__.py 文件已生成
+
+### 2.3 系统文件
+
+**Tool**: Write
+
+**目标**: 创建 pyproject.toml、README.md、.gitignore
+
+**配置内容**:
+
+#### pyproject.toml 模板
+
+```toml
+[project]
+name = "{{PROJECT_NAME}}"
+version = "0.1.0"
+description = "{{GOAL}}"
+requires-python = ">=3.10"
+dependencies = [
+    # 从 requirements.md 提取依赖
+]
+
+[project.scripts]
+{{PROJECT_NAME}} = "{{PROJECT_NAME}}.__main__:main"
+
+# 中文镜像源配置
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+default = true
+
+[tool.uv.pip]
+index-url = "https://repo.huaweicloud.com/repository/pypi/simple"
+
+# 标准工具配置
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=src --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 ```
 
-**执行**:
-```bash
-# 如果未初始化
-if [ "$GIT_EXISTS" = false ]; then
-    git init
-    git branch -M main
-    echo "Git 仓库已初始化"
-fi
+#### README.md 模板
 
-# 创建 .gitignore
-Write(file_path=".gitignore", content="# Virtual Environment
+```markdown
+# {{PROJECT_NAME}}
+
+{{GOAL}}
+
+## 安装
+
+\`\`\`bash
+# 使用 uv (推荐)
+uv venv
+source .venv/bin/activate
+uv sync
+
+# 或使用 pip
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+\`\`\`
+
+## 使用
+
+\`\`\`bash
+{{PROJECT_NAME}} --help
+\`\`\`
+
+## 开发
+
+\`\`\`bash
+# 运行测试
+pytest
+
+# 格式化代码
+ruff format .
+
+# 检查代码
+ruff check .
+
+# 类型检查
+mypy src/
+\`\`\`
+
+## 合规检查
+
+\`\`\`bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py --version-dir {{VERSION_DIR}}
+\`\`\`
+```
+
+#### .gitignore 模板
+
+```
+# Virtual Environment
 .venv/
 venv/
 __pycache__/
 
 # Testing
-.pytest_cache/
 .pytest_cache/
 .coverage
 htmlcov/
@@ -217,369 +340,115 @@ build/
 # OS
 .DS_Store
 Thumbs.db
-")
+
+# ProjectFlow
+pjflow/
 ```
 
 **CHECKLIST**:
-- [ ] Git 仓库初始化/确认
-- [ ] .gitignore 创建
-
----
-
-### 2.2 项目架构
-
-**Tool**: Write / Bash
-
-**项目类型判断**:
-
-根据用户需求关键词和环境检测，选择项目架构：
-
-| 关键词 | 项目类型 | 目录结构 |
-|--------|----------|----------|
-| CLI, 命令行, 工具 | **cli** | 2-3 层 |
-| Library, 库, SDK, 框架 | **library** | 2-3 层 |
-| FastAPI, API, REST, async | **fastapi** | 多层，使用 pyflow-fastapi-pro |
-| Django, 全栈, 管理系统 | **django** | 多层 |
-| Data, 数据处理, ETL, 分析 | **data** | 深层 |
-| ML, 机器学习, AI, 模型 | **ml** | 深层 |
-
-**CLI 架构** (simple/medium):
-```
-project-name/
-├── src/
-│   └── project_name/
-│       ├── __init__.py
-│       ├── __main__.py
-│       ├── cli.py
-│       └── commands/
-│           └── __init__.py
-└── tests/
-    ├── __init__.py
-    ├── conftest.py
-    └── test_cli.py
-```
-
-**Library 架构** (simple/medium):
-```
-project-name/
-├── src/
-│   └── project_name/
-│       ├── __init__.py
-│       ├── core.py
-│       └── utils.py
-└── tests/
-    ├── __init__.py
-    ├── test_core.py
-    └── test_utils.py
-```
-
-**FastAPI 架构** (medium/complex):
-```
-project-name/
-├── src/
-│   └── project_name/
-│       ├── __init__.py
-│       ├── main.py
-│       ├── config.py
-│       ├── api/
-│       │   ├── __init__.py
-│       │   └── v1/
-│       │       ├── __init__.py
-│       │       └── router.py
-│       ├── core/
-│       │   ├── __init__.py
-│       │   ├── database.py
-│       │   ├── security.py
-│       ├── models/
-│       │   ├── __init__.py
-│       │   └── user.py
-│       └── services/
-│           └── __init__.py
-└── tests/
-    ├── __init__.py
-    ├── conftest.py
-    └── api/
-        └── v1/
-            └── __init__.py
-```
-
-**执行**:
-```bash
-# 根据选择的架构类型创建目录
-# 示例：创建 FastAPI 项目架构
-mkdir -p src/project_name/{api/v1,core,models,services}
-mkdir -p tests/project_name/api/v1
-
-# 创建 __init__.py 文件
-for dir in src/project_name/api src/project_name/api/v1 core models services; do
-    mkdir -p src/project_name/$dir
-    touch src/project_name/$dir/__init__.py
-done
-```
-
-**CHECKLIST**:
-- [ ] 架构类型已选择
-- [ ] 目录结构已创建
-- [ ] __init__.py 文件已生成
-
----
-
-### 2.3 系统文件
-
-**Tool**: Write
-
-**pyproject.toml**:
-```toml
-[project]
-name = "project-name"
-version = "0.1.0"
-description = "{{GOAL}}"
-requires-python = ">=3.10"
-dependencies = [
-    # 根据项目类型添加依赖
-    # CLI: click, typer
-    # FastAPI: fastapi, "uvicorn[standard]", pydantic
-    # Django: django
-    # Data: pandas, numpy
-    # ML: torch, scikit-learn
-]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-
-[tool.coverage.run]
-source = ["src"]
-
-[tool.ruff]
-line-length = 88
-target-version = "py310"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
-
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-
-# 中文环境镜像源配置
-[[tool.uv.index]]
-url = "https://mirrors.aliyun.com/pypi/simple"
-default = true
-
-[tool.uv.pip]
-index-url = "https://repo.huaweicloud.com/repository/pypi/simple"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-```
-
-**.gitignore**: 见 2.1
-
-**README.md**:
-```markdown
-# Project Name
-
-{{GOAL}}
-
-## Setup
-
-\`\`\`bash
-# 使用 uv (推荐）
-uv venv
-source .venv/bin/activate
-uv pip install -e .
-
-# 或使用 venv
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
-\`\`\`
-
-## Development
-
-\`\`\`bash
-# Run tests
-pytest
-
-# Format code
-ruff format .
-
-# Check linting
-ruff check .
-
-# Run with coverage
-pytest --cov=src --cov-report=term-missing
-\`\`\`
-
-## Compliance
-
-Run compliance checks:
-\`\`\`bash
-python .claude/skills/projectflow-executor/scripts/check_compliance.py --version-dir {{VERSION_DIR}}
-\`\`\`
-```
-
----
+- [ ] pyproject.toml 已创建
+- [ ] README.md 已创建
+- [ ] .gitignore 已创建
 
 ### 2.4 项目文件
 
 **Tool**: Write
 
-**原则**: 创建空占位文件，**严禁编写业务逻辑**
+**目标**: 根据需求文档创建占位文件（不含业务逻辑）
 
-**Python 文件模板**:
+**操作**:
+- 从 requirements.md 提取模块列表
+- 创建空占位文件
+
+**文件模板**:
 ```python
 # -*- coding: utf-8 -*-
 """
 {{MODULE_DESCRIPTION}}
+"""
 
 __all__ = []
 ```
 
-**执行**:
-```bash
-# 创建空文件
-for dir in src/project_name; do
-    for subdir in $(find src/project_name -type d -mindepth 1); do
-        mkdir -p src/project_name/$subdir
-        touch src/project_name/$subdir/__init__.py
-done
-```
-
 **CHECKLIST**:
-- [ ] 所有目录已创建
 - [ ] 占位文件已生成
 - [ ] 无业务逻辑代码
-
----
 
 ### 2.5 虚拟环境
 
 **Tool**: Skill (pyflow-uv-package-manager)
 
-**前置检测**:
-- 虚拟环境类型
-- 是否已存在
+**目标**: 创建虚拟环境并安装依赖
 
-**执行**:
-```bash
-# 创建 Python 虚拟环境
-uv venv
-
-# 激活并安装依赖（根据项目类型）
-uv pip install -e .
-```
+**操作**:
+- 创建虚拟环境（uv venv）
+- 安装依赖（uv sync）
 
 **CHECKLIST**:
-- [ ] 虚拟环境创建
+- [ ] 虚拟环境已创建
 - [ ] 依赖已安装
+
+**Skip if**: `{{PROJECT_STATUS}}` == add-feature
 
 ---
 
-## Phase 3: 工作树准备（老项目）
+## Phase 3: 工作树准备
 
 **适用场景**: `{{PROJECT_STATUS}}` == add-feature
-
-**Skip if**: 新项目（`{{PROJECT_STATUS}}` == new）
-
-**前置步骤**: 创建版本化需求文档
-```python
-from scripts.document_manager import DocumentManager, create_requirements_template
-
-doc_manager = DocumentManager(Path("./pjflow"))
-requirements_content = create_requirements_template(
-    goal="{{GOAL}}",
-    project_type="add-feature",
-    complexity="{{COMPLEXITY}}"
-)
-doc_manager.create_versioned_requirements(
-    "{{VERSION_DIR}}",
-    requirements_content
-)
-```
 
 ### 3.1 Git 分支管理
 
 **Tool**: Bash
 
-**执行**:
-```bash
-# 检查当前分支
-CURRENT_BRANCH=$(git branch --show-current)
-echo "当前分支: $CURRENT_BRANCH"
+**目标**: 创建 feature 分支
 
-# 创建 feature 分支
-FEATURE_NAME="{{VERSION_DIR}}"  # 例如: v1_add_percentage
-git checkout -b feature/"$FEATURE_NAME"
-
-echo "已创建并切换到分支: feature/$FEATURE_NAME"
-```
+**操作**:
+- 检查当前分支
+- 创建并切换到 feature/{{VERSION_DIR}} 分支
 
 **CHECKLIST**:
-- [ ] 当前分支确认
-- [ ] Feature 分支创建成功
+- [ ] Feature 分支已创建
 - [ ] 分支命名符合规范
-- [ ] 需求文档已创建
-
----
 
 ### 3.2 依赖管理
 
 **Tool**: Skill (pyflow-uv-package-manager)
 
-**执行**:
-```bash
-# 添加新功能所需的依赖
-uv add fastapi uvicorn pydantic sqlalchemy
-```
+**目标**: 添加新功能所需的依赖
+
+**操作**:
+- 从 requirements.md 提取新依赖
+- 使用 uv add 添加依赖
 
 **CHECKLIST**:
-- [ ] 依赖已添加到 pyproject.toml
-- [ ] 依赖已安装到虚拟环境
+- [ ] 新依赖已添加
 - [ ] 无依赖冲突
-
----
 
 ### 3.3 系统文件更新
 
 **Tool**: Edit
 
-**执行**:
-- 更新 README.md 添加新功能说明
-- 更新版本号（如需要）
+**目标**: 更新 README.md 和版本号
 
 **CHECKLIST**:
 - [ ] README.md 已更新
 - [ ] 版本号已更新（如需要）
-- [ ] 变更日志已记录
-
----
 
 ### 3.4 新功能文件创建
 
 **Tool**: Write
 
-**原则**: 创建空文件，不编写业务逻辑
+**目标**: 创建新功能的占位文件
 
-**执行**:
-```bash
-# 根据功能需求确定需要新增的文件
-# 创建占位文件
-mkdir -p src/project_name/new_feature
-touch src/project_name/new_feature/__init__.py
-```
+**操作**:
+- 从 requirements.md 提取新模块
+- 创建空占位文件
 
 **CHECKLIST**:
-- [ ] 新增目录已创建
-- [ ] 占位文件已生成
-- [ ] 无业务逻辑代码
-- [ ] 与现有架构一致
+- [ ] 新文件已创建
+- [ ] 无业务逻辑
+
+**Skip if**: `{{PROJECT_STATUS}}` == new
 
 ---
 

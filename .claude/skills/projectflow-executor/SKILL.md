@@ -3,8 +3,8 @@ name: projectflow-executor
 description: |
   读取 pjflow/{VERSION_DIR}/task_plan.md，逐阶段执行计划，更新 CHECKLIST.md 和 progress.md。
   触发条件: 由 projectflow-planner 调用，或用户说"继续执行"
-  核心职责: 逐阶段执行计划，更新状态，标记 Phase 完成状态
-  编排原则: ✅ 可创建脚手架 | ❌ 禁止编写业务逻辑 | ❌ 语言无关
+  核心职责: 智能加载执行上下文（需求+宪法+模板），逐阶段执行计划，更新状态
+  编排原则: ✅ 可创建脚手架 | ❌ 禁止编写业务逻辑 | ❌ 语言无关 | 🧠 充分利用 LLM 理解能力
 ---
 
 # ProjectFlow Executor
@@ -72,7 +72,7 @@ description: |
 
 ```
 Step 1: 读取 task_plan.md，找下一个 pending Phase
-Step 2: 读取 constitution.md 和 requirements.md
+Step 2: 智能加载执行上下文（三层信息源）
 Step 3: 判断脚手架 vs 业务逻辑 → 选择工具
 Step 4: 调用 Tool → 等待返回 ⏸️
 Step 5: 验证结果
@@ -80,7 +80,15 @@ Step 6: 更新 CHECKLIST.md 和 progress.md
 Step 7: 标记 Phase 完成 → 回到 Step 1
 ```
 
-> ⚠️ **Step 4 是关键**: 等待 tool 返回前，不要做任何其他操作。
+> ⚠️ **Step 2 是关键**: 根据当前 Phase 类型，智能选择信息来源（需求/宪法/模板）
+
+### 三层信息源
+
+| 信息源 | 内容 | 用途 |
+|--------|------|------|
+| **requirements.md** | 项目特定配置（依赖、目录结构、功能规格） | 要做什么 |
+| **constitution.md** | 质量约束（类型安全、TDD、代码风格） | 怎么做 |
+| **template.md** | 通用脚手架（中文镜像源、工具配置） | 语言特定配置 |
 
 ### Phase 4/5 特殊规则
 
@@ -115,6 +123,17 @@ enhanced_prompt = f"""
 ```
 
 详细步骤见 [EXECUTION_STEPS.md](references/EXECUTION_STEPS.md)
+
+### Phase 执行策略
+
+| Phase | 信息来源 | 执行方式 | 说明 |
+|-------|---------|---------|------|
+| 0, 1 | - | 直接执行 | 文档还不存在，生成文档 |
+| 2.0, 2.1, 2.5 | 🔧 模板 | 直接执行 | 通用逻辑（Git、虚拟环境） |
+| 2.2, 2.3, 2.4 | 📋 需求 + 🔧 模板 | LLM 理解并合并 | 核心脚手架（目录、配置、文件） |
+| 3.1-3.4 | 📋 需求 | LLM 理解 | 添加功能（分支、依赖、新文件） |
+| 4 | 📋 需求 + 📜 宪法 | 注入到 TDD | 不是自己执行，而是约束 TDD 工具 |
+| 5 | - | 运行合规检查 | 验证代码是否符合文档 |
 
 ## CHECKLIST 更新
 

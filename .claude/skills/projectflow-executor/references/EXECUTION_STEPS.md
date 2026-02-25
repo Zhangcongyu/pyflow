@@ -20,7 +20,154 @@ pjflow/{VERSION_DIR}/requirements.md # 版本化需求文档
 pjflow/{VERSION_DIR}/task_plan.md    # 当前执行计划
 ```
 
-## Step 3: 判断脚手架 vs 业务逻辑
+## Step 3: 智能加载执行上下文
+
+> 🧠 **充分利用 LLM 理解能力，动态提取需求信息**
+
+### Phase 分类执行策略
+
+| Phase 类型 | 信息来源 | 执行方式 |
+|------------|---------|---------|
+| **Phase 0, 1** | - | 直接执行（文档还不存在） |
+| **Phase 2.0, 2.1, 2.5** | 🔧 模板（通用脚本） | 直接执行 |
+| **Phase 2.2, 2.3, 2.4** | 📋 需求 + 🔧 模板 | LLM 理解并合并 |
+| **Phase 3.1-3.4** | 📋 需求 | LLM 理解 |
+| **Phase 4** | 📋 需求 + 📜 宪法 | 注入到 TDD 工具 |
+| **Phase 5** | - | 运行合规检查 |
+
+### 各子阶段详细策略
+
+#### Phase 2.0, 2.1, 2.5: 通用脚手架
+
+**使用 LLM 内置知识，不需要读取需求文档**
+
+```bash
+# 2.0: 干扰检测
+Bash("检测并清理冲突目录")
+
+# 2.1: Git 初始化
+Bash("git init && git branch -M main")
+Write(".gitignore", "# 标准 Python .gitignore 内容")
+
+# 2.5: 虚拟环境
+Bash("uv venv && source .venv/bin/activate && uv sync")
+```
+
+#### Phase 2.2: 项目架构
+
+**LLM 理解需求文档，提取目录结构**
+
+```python
+# 读取需求文档
+requirements = Read(f"pjflow/{version_dir}/requirements.md")
+
+# LLM 理解并提取目录结构（无论在哪个章节）
+"""
+示例 rarcrack 项目：
+需求文档第 2.1 节描述了目录结构：
+- src/rarcrack/core/（cracker.py, dictionary.py, progress.py）
+- src/rarcrack/utils/（rar_handler.py, config.py）
+- tests/
+"""
+
+# 创建目录
+Bash("mkdir -p src/rarcrack/core src/rarcrack/utils tests")
+```
+
+#### Phase 2.3: 系统文件
+
+**LLM 合并需求文档和模板配置**
+
+```python
+# 1. 从需求文档提取依赖
+requirements = Read(f"pjflow/{version_dir}/requirements.md")
+"""
+需求文档第 6 节：
+dependencies = ["typer>=0.9.0", "rarfile>=4.0", "rich>=13.0.0"]
+"""
+
+# 2. 从模板提取工具配置
+template = Read("../projectflow-planner/assets/templates/python-complete-template.md")
+"""
+模板提供：
+- 中文镜像源配置
+- pytest、ruff、mypy 标准配置
+"""
+
+# 3. LLM 合并生成 pyproject.toml
+pyproject_content = f"""
+[project]
+name = "{project_name}"
+dependencies = {从需求提取}
+
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple"  # 从模板
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]  # 从模板
+"""
+```
+
+#### Phase 2.4: 项目文件
+
+**LLM 理解需求文档，创建占位文件**
+
+```python
+# 从需求文档提取模块列表
+"""
+需求文档指定需要创建：
+- cli.py（命令行界面）
+- core/cracker.py（破解核心逻辑）
+- core/dictionary.py（字典处理）
+...
+"""
+
+# 使用模板的空文件格式创建
+for module in modules:
+    Write(f"src/{module}.py", "# -*- coding: utf-8 -*-\n\"\"\"{描述}\"\"\"\n__all__ = []")
+```
+
+**原则**：严禁编写业务逻辑
+
+#### Phase 3: 工作树准备
+
+**LLM 理解新版本需求文档**
+
+```python
+# 读取新版本的 requirements.md
+new_requirements = Read(f"pjflow/{version_dir}/requirements.md")
+
+# 理解需要添加哪些新功能、新依赖、新文件
+# 创建分支、添加依赖、创建占位文件
+```
+
+#### Phase 4: TDD 执行
+
+**不是自己执行，而是注入文档到 TDD 工具**
+
+```python
+# 读取文档
+constitution = Read("pjflow/constitution.md")
+requirements = Read(f"pjflow/{version_dir}/requirements.md")
+
+# 注入到 TDD 工具
+Skill(skill="pyflow-tdd-cycle", args=f"""
+{GOAL}
+
+## 🚨 强制约束
+### 项目宪法
+{constitution}
+
+### 需求文档
+{requirements}
+""")
+```
+
+**关键**：Executor 不编写业务代码，只约束 TDD 工具的输出。
+
+---
+
+## Step 3.5: 判断脚手架 vs 业务逻辑
 
 > ⚠️ **这个判断至关重要！** 错误判断会破坏整个 TDD 流程。
 
@@ -201,14 +348,14 @@ Edit(
 
 ## Step 5.5: 简单项目需求文档生成（特殊步骤）
 
-**触发条件**: Phase 1 完成后，且 `{{COMPLEXITY}}` == simple
+**触发条件**: Phase 0 执行时，且 `{{COMPLEXITY}}` == simple
 
 **说明**: 对于简单项目，不需要调用 brainstorming skill，直接生成需求文档模板。
 
 **参考模板**:
-- Python: `../projectflow-planner/assets/templates/python-complete-template.md` (Step 5.5)
-- TypeScript: `../projectflow-planner/assets/templates/typescript-complete-template.md` (Step 5.5)
-- Go: `../projectflow-planner/assets/templates/go-template.md` (Step 5.5)
+- Python: `../projectflow-planner/assets/templates/python-complete-template.md` (Phase 0.1)
+- TypeScript: `../projectflow-planner/assets/templates/typescript-complete-template.md` (Phase 0.1)
+- Go: `../projectflow-planner/assets/templates/go-template.md` (Phase 0.1)
 
 **执行方式**: 使用 Write 工具，按模板写入需求文档
 
