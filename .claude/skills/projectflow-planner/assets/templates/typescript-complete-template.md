@@ -12,7 +12,8 @@
 | `{{PROJECT_STATUS}}` | new / add-feature | new |
 | `{{COMPLEXITY}}` | simple / medium / complex | medium |
 | `{{VERSION_DIR}}` | 版本目录名称 | v0_initial / v1_add_feature |
-| `{{PROJECT_NAME}}` | 项目名称 | myapp |
+
+**说明**: 其他如项目名称等均为示例值，Executor 执行时根据当前目录和需求自动填充。
 
 ---
 
