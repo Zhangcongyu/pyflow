@@ -249,10 +249,10 @@ EOF
 
 | 关键词 | 项目类型 | 目录结构 | 专用 Agent |
 |--------|----------|----------|------------|
-| CLI, 命令行, 工具 | **cli** | cmd/ + internal/ | pyflow-python-pro |
-| Library, 库, SDK | **library** | internal/ + pkg/ | pyflow-python-pro |
-| Web, API, Server | **web** | cmd/server/ + internal/ + pkg/ | pyflow-python-pro |
-| Microservice, 微服务 | **microservice** | cmd/ + internal/ + pkg/ | pyflow-python-pro |
+| CLI, 命令行, 工具 | **cli** | cmd/ + internal/ | pyflow-go-pro |
+| Library, 库, SDK | **library** | internal/ + pkg/ | pyflow-go-pro |
+| Web, API, Server | **web** | cmd/server/ + internal/ + pkg/ | pyflow-go-pro |
+| Microservice, 微服务 | **microservice** | cmd/ + internal/ + pkg/ | pyflow-go-pro |
 
 **CLI 架构** (simple/medium):
 ```
@@ -587,7 +587,7 @@ touch internal/new_feature/handler.go
 
 ### Simple 项目 ({{COMPLEXITY}} == simple)
 
-**Tool**: pyflow-tdd-cycle
+**Tool**: pyflow-golang-testing
 
 **前置步骤**: 读取合规文档
 ```python
@@ -599,7 +599,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 
 **调用**:
 ```
-Skill(skill="pyflow-tdd-cycle", args="""
+Skill(skill="pyflow-golang-testing", args="""
 {{GOAL}} --single-cycle
 
 ## 🚨 强制约束（必须遵守）
@@ -639,7 +639,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.1: RED - 生成测试
 
-**Tool**: pyflow-test-automator
+**Tool**: pyflow-golang-testing
 
 **Tool Type**: Task (subagent_type)
 
@@ -654,7 +654,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-test-automator",
+    subagent_type="pyflow-golang-testing",
     subject="生成测试套件",
     description="""
     为 {{GOAL}} 生成完整测试套件
@@ -693,7 +693,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.2: GREEN - 实现功能
 
-**Tool**: pyflow-python-pro
+**Tool**: pyflow-go-pro
 
 **Tool Type**: Task (subagent_type)
 
@@ -708,7 +708,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="实现功能使测试通过",
     description="""
     实现所有功能使测试通过
@@ -747,7 +747,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.3: REFACTOR - 重构代码
 
-**Tool**: pyflow-python-pro
+**Tool**: pyflow-go-pro
 
 **Tool Type**: Task (subagent_type)
 
@@ -762,7 +762,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="重构优化代码",
     description="""
     优化代码结构和质量
@@ -806,7 +806,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.1: RED - 生成完整测试
 
-**Tool**: pyflow-test-automator
+**Tool**: pyflow-golang-testing
 
 **前置步骤**: 读取合规文档
 ```python
@@ -817,7 +817,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-test-automator",
+    subagent_type="pyflow-golang-testing",
     subject="生成完整测试套件",
     description="""
     为 {{GOAL}} 生成单元测试、集成测试、性能测试、并发测试
@@ -857,7 +857,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.2: GREEN - 基础实现
 
-**Tool**: pyflow-python-pro
+**Tool**: pyflow-go-pro
 
 **前置步骤**: 读取合规文档
 ```python
@@ -868,7 +868,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="实现基础功能",
     description="""
     实现所有功能使测试通过
@@ -907,7 +907,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.3: GREEN - 并发优化（如需要）
 
-**Tool**: pyflow-python-pro
+**Tool**: pyflow-go-pro
 
 **执行**: 添加并发支持提高性能
 
@@ -920,7 +920,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="添加并发支持以提高性能",
     description="""
     添加 goroutine/channel 支持
@@ -961,7 +961,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.4: GREEN - 性能优化
 
-**Tool**: pyflow-python-performance-optimization
+**Tool**: pyflow-golang-patterns
 
 **前置步骤**: 读取合规文档
 ```python
@@ -974,7 +974,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-performance-optimization",
+    subagent_type="pyflow-golang-patterns",
     subject="分析并优化性能瓶颈",
     description="""
     分析并优化性能瓶颈
@@ -1016,7 +1016,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.5: REFACTOR - 深度优化
 
-**Tool**: pyflow-python-performance-optimization
+**Tool**: pyflow-golang-patterns
 
 **前置步骤**: 读取合规文档
 ```python
@@ -1029,7 +1029,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-performance-optimization",
+    subagent_type="pyflow-golang-patterns",
     subject="深度性能优化",
     description="""
     应用高级优化技术
@@ -1069,7 +1069,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### Phase 4.6: REFACTOR - 最终清理
 
-**Tool**: pyflow-python-pro
+**Tool**: pyflow-go-pro
 
 **前置步骤**: 读取合规文档
 ```python
@@ -1082,7 +1082,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="最终代码清理",
     description="""
     清理代码、更新文档、确保代码质量
@@ -1170,14 +1170,14 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 compliance_report = Read("./pjflow/{{VERSION_DIR}}/compliance_report.md")
 ```
 
-**Tool**: pyflow-code-reviewer
+**Tool**: pyflow-go-reviewer
 
 **Tool Type**: Task (subagent_type)
 
 **调用**:
 ```
 Task(
-    subagent_type="pyflow-code-reviewer",
+    subagent_type="pyflow-go-reviewer",
     subject="审核代码",
     description="""
     审核整个代码库
@@ -1315,7 +1315,7 @@ Edit(
 - 基础质量审核
 - 快速迭代
 
-**Phase 4 执行**: 单次 `pyflow-tdd-cycle --single-cycle`
+**Phase 4 执行**: 单次 `pyflow-golang-testing --single-cycle`
 
 ### Medium 项目特征
 
@@ -1367,12 +1367,12 @@ Skill(skill="pyflow-brainstorming", args="{{GOAL}}")
 // 调用 pyflow-constitution 创建宪法
 Skill(skill="pyflow-constitution", args="{{GOAL}}")
 
-// 调用 pyflow-tdd-cycle 执行 TDD
-Skill(skill="pyflow-tdd-cycle", args="{{GOAL}} --single-cycle")
+// 调用 pyflow-golang-testing 执行 TDD
+Skill(skill="pyflow-golang-testing", args="{{GOAL}} --single-cycle")
 
 // 调用 code-reviewer 审核代码
 Task(
-    subagent_type="pyflow-code-reviewer",
+    subagent_type="pyflow-go-reviewer",
     subject="审核代码",
     description="审核整个代码库"
 )
@@ -1381,16 +1381,16 @@ Task(
 ### Task 调用（Agent）
 
 ```go
-// 调用 pyflow-test-automator 生成测试
+// 调用 pyflow-golang-testing 生成测试
 Task(
-    subagent_type="pyflow-test-automator",
+    subagent_type="pyflow-golang-testing",
     subject="生成测试套件",
     description="为 {{GOAL}} 生成完整测试套件"
 )
 
-// 调用 pyflow-python-pro 实现 Go 功能
+// 调用 pyflow-go-pro 实现 Go 功能
 Task(
-    subagent_type="pyflow-python-pro",
+    subagent_type="pyflow-go-pro",
     subject="实现功能使测试通过",
     description="实现所有功能使测试通过"
 )

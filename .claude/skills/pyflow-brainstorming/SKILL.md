@@ -1,6 +1,10 @@
 ---
-name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. Receives --version-dir <VERSION_DIR> parameter for versioned requirements output."
+name: pyflow-brainstorming
+description: |
+  MUST use before any creative work - creating features, building components,
+  adding functionality, or modifying behavior. Explores user intent, requirements
+  and design before implementation. Receives --version-dir <VERSION_DIR> parameter
+  for versioned requirements output.
 ---
 
 # Brainstorming Ideas Into Designs

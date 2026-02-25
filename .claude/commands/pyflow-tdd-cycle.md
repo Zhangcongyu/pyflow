@@ -25,6 +25,59 @@ This workflow enforces test-first development through coordinated agent orchestr
 
 Follow this execution flow:
 
+## Pre-flight Checks
+
+### 0. Language Detection
+
+**CRITICAL**: Detect the project programming language BEFORE starting TDD cycle.
+
+Execute the following detection logic:
+
+```bash
+# Detect project language by checking for language-specific files
+if [ -f "pyproject.toml" ] || [ -f "setup.py" ] || [ -f "requirements.txt" ] || [ -d "src/" ] || [ -d ".venv" ]; then
+    DETECTED_LANGUAGE="python"
+    LANGUAGE_AGENT="pyflow-python-pro"
+    TEST_AGENT="pyflow-test-automator"
+elif [ -f "tsconfig.json" ] || [ -f "package.json" ] && grep -q "typescript" package.json; then
+    DETECTED_LANGUAGE="typescript"
+    LANGUAGE_AGENT="pyflow-typescript-pro"
+    TEST_AGENT="pyflow-test-automator"
+elif [ -f "go.mod" ] || [ -f "go.sum" ] || [ -d "cmd/" ] || [ -d "internal/" ]; then
+    DETECTED_LANGUAGE="go"
+    LANGUAGE_AGENT="pyflow-go-pro"
+    TEST_AGENT="pyflow-golang-testing"
+elif [ -f "package.json" ]; then
+    DETECTED_LANGUAGE="javascript"
+    LANGUAGE_AGENT="pyflow-nodejs-backend-patterns"
+    TEST_AGENT="pyflow-test-automator"
+else
+    # Fallback: Ask user to specify language
+    echo "Unable to auto-detect project language."
+    echo "Please specify: python, typescript, go, or javascript"
+    read -p "Project language: " USER_LANGUAGE
+    DETECTED_LANGUAGE="$USER_LANGUAGE"
+    case $DETECTED_LANGUAGE in
+        python) LANGUAGE_AGENT="pyflow-python-pro"; TEST_AGENT="pyflow-test-automator" ;;
+        typescript) LANGUAGE_AGENT="pyflow-typescript-pro"; TEST_AGENT="pyflow-test-automator" ;;
+        go) LANGUAGE_AGENT="pyflow-go-pro"; TEST_AGENT="pyflow-golang-testing" ;;
+        javascript) LANGUAGE_AGENT="pyflow-nodejs-backend-patterns"; TEST_AGENT="pyflow-test-automator" ;;
+        *) echo "Unsupported language: $DETECTED_LANGUAGE"; exit 1 ;;
+    esac
+fi
+
+echo "✅ Detected language: $DETECTED_LANGUAGE"
+echo "✅ Using implementation agent: $LANGUAGE_AGENT"
+echo "✅ Using test agent: $TEST_AGENT"
+```
+
+**Store these variables for use throughout the TDD cycle:**
+- `{{DETECTED_LANGUAGE}}` - The detected programming language
+- `{{LANGUAGE_AGENT}}` - The agent to use for implementation
+- `{{TEST_AGENT}}` - The agent to use for test generation
+
+---
+
 ## Configuration
 
 ### Coverage Thresholds
@@ -48,7 +101,7 @@ Automatically trigger refactoring when:
 
 ### 1. Requirements Analysis
 
-**Agent**: `pyflow-architect-review`
+**Agent**: `pyflow-architect-review` (language-agnostic)
 
 **Prompt Template**:
 ```
@@ -74,7 +127,7 @@ Output: Comprehensive test specification document.
 
 ### 2. Test Architecture Design
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}` (dynamically selected based on detected language)
 
 **Prompt Template**:
 ```
@@ -107,7 +160,7 @@ Output: Test architecture document with fixture design and mock strategy.
 
 ### 3. Write Unit Tests (Failing)
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}`
 
 **Prompt Template**:
 ```
@@ -169,7 +222,7 @@ Output: Test failure verification report with pass/fail status for each test.
 
 ### 5. Minimal Implementation
 
-**Agent**: `pyflow-python-pro` (for Python) or appropriate language agent
+**Agent**: `{{LANGUAGE_AGENT}}` (automatically selected based on detected language)
 
 **Prompt Template**:
 ```
@@ -201,7 +254,7 @@ Output: Minimal working implementation.
 
 ### 6. Verify Test Success
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}`
 
 **Prompt Template**:
 ```
@@ -272,7 +325,7 @@ Output: Refactored code with refactoring report documenting changes.
 
 ### 8. Test Refactoring
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}`
 
 **Prompt Template**:
 ```
@@ -306,7 +359,7 @@ Output: Refactored tests with improved test structure.
 
 ### 9. Write Integration Tests (Failing First)
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}`
 
 **Prompt Template**:
 ```
@@ -338,7 +391,7 @@ Output: Failing integration tests.
 
 ### 10. Implement Integration
 
-**Agent**: `pyflow-python-pro` (or appropriate language agent)
+**Agent**: `{{LANGUAGE_AGENT}}` (automatically selected based on detected language)
 
 **Prompt Template**:
 ```
@@ -366,7 +419,7 @@ Output: Integration implementation.
 
 ### 11. Performance and Edge Case Tests
 
-**Agent**: `pyflow-test-automator`
+**Agent**: `{{TEST_AGENT}}`
 
 **Prompt Template**:
 ```

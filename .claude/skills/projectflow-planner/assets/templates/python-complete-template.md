@@ -688,7 +688,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 **调用**:
 ```
 Task(
-    subagent_type="test-automator",
+    subagent_type="pyflow-test-automator",
     subject="生成测试套件",
     description=f"""为 {{GOAL}} 生成完整测试套件
 
@@ -829,12 +829,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **前置步骤**: 注入文档上下文
 
-**Tool**: test-automator
+**Tool**: pyflow-test-automator
 
 **调用**:
 ```
 Task(
-    subagent_type="test-automator",
+    subagent_type="pyflow-test-automator",
     subject="生成完整测试套件",
     description=f"""为 {{GOAL}} 生成单元测试、集成测试、性能测试、安全测试
 
@@ -1114,7 +1114,7 @@ mypy src/
 
 #### 5.3 代码审核
 
-**Tool**: code-reviewer
+**Tool**: pyflow-code-reviewer
 
 **Tool Type**: Task (subagent_type)
 
@@ -1123,7 +1123,7 @@ mypy src/
 **调用**:
 ```
 Task(
-    subagent_type="code-reviewer",
+    subagent_type="pyflow-code-reviewer",
     subject="审核代码",
     description=f"""审核整个代码库
 
