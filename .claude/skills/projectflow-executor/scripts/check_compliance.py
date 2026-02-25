@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scripts.checker_factory import CheckerFactory
 from scripts.compliance_reporter import ComplianceReporter
+from scripts.base_checker import SeverityLevel, ComplianceResult
 
 
 def main() -> int:
@@ -67,6 +68,13 @@ def main() -> int:
         default=None,
         help="Version directory name (e.g., v0_initial)",
     )
+    parser.add_argument(
+        "--mode",
+        "-m",
+        choices=["full", "pre-tdd", "post-tdd", "documents-only"],
+        default="full",
+        help="Check mode: full (all), pre-tdd (documents only), post-tdd (with injection verify), documents-only",
+    )
 
     args = parser.parse_args()
 
@@ -108,9 +116,45 @@ def main() -> int:
         requirements_path=requirements_path,
     )
 
-    # Run checks
-    print("Running compliance checks...")
-    result = checker.run_all_checks()
+    # Run checks based on mode
+    if args.mode == "pre-tdd":
+        print("Running Phase 4 pre-checks...")
+        issues = checker.check_pre_tdd_requirements()
+        result = ComplianceResult(
+            language=language,
+            checker_name=f"{checker.checker_name} (Pre-TDD)",
+            passed=all(i.severity != SeverityLevel.CRITICAL for i in issues),
+            issues=issues,
+        )
+
+    elif args.mode == "post-tdd":
+        print("Running Phase 4 post-verification...")
+        # Run all checks + mark as injection verification
+        result = checker.run_all_checks()
+        # Add injection verification metadata
+        injection_issues = checker.check_post_tdd_injection_verify()
+        result.issues.extend(injection_issues)
+        # Update checker name to reflect mode
+        result.checker_name = f"{checker.checker_name} (Post-TDD)"
+
+    elif args.mode == "documents-only":
+        print("Checking documents only...")
+        issues = []
+        issues.extend(checker.check_constitution_compliance())
+        issues.extend(checker.check_requirements_compliance())
+        result = ComplianceResult(
+            language=language,
+            checker_name=f"{checker.checker_name} (Documents)",
+            passed=all(
+                i.severity not in (SeverityLevel.CRITICAL, SeverityLevel.HIGH)
+                for i in issues
+            ),
+            issues=issues,
+        )
+
+    else:  # full
+        print("Running full compliance checks...")
+        result = checker.run_all_checks()
 
     # Print summary
     print("\n" + "=" * 60)

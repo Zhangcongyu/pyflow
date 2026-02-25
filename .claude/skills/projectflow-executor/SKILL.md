@@ -94,6 +94,23 @@ Step 7: 标记 Phase 完成 → 回到 Step 1
 
 > 🚨 **Phase 4 (TDD 执行) 和 Phase 5 (质量审核) 必须注入宪法和需求！**
 
+**三步骤执行流程**:
+
+#### Step 1: 前置检查 (Pre-TDD)
+
+在开始 Phase 4/5 之前，必须验证文档存在且完整：
+
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language auto \
+    --version-dir {VERSION_DIR} \
+    --mode pre-tdd
+```
+
+**阻断条件**: 如有 CRITICAL 级别问题，必须修复后才能继续。
+
+#### Step 2: 文档注入 + 执行
+
 **强制要求**:
 - ✅ 每个 Phase 4/5 子阶段执行前，必须读取文档
 - ✅ 必须将文档内容注入到 Tool/Agent 的调用参数中
@@ -121,6 +138,23 @@ enhanced_prompt = f"""
 **重要**: 违反上述约束的代码/测试将被拒绝！必须确保所有代码符合宪法要求和需求范围。
 """
 ```
+
+#### Step 3: 后置验证 (Post-TDD)
+
+在 Phase 4/5 完成后，验证代码是否反映了文档约束：
+
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language auto \
+    --version-dir {VERSION_DIR} \
+    --mode post-tdd
+```
+
+**验证内容**:
+- 代码风格符合宪法
+- 类型注解符合宪法
+- 错误处理符合宪法
+- 测试覆盖率达标
 
 详细步骤见 [EXECUTION_STEPS.md](references/EXECUTION_STEPS.md)
 
@@ -156,9 +190,29 @@ enhanced_prompt = f"""
 
 Phase 4/5 后自动执行合规检查。
 
+**检查模式**:
+- `--mode full`: 完整检查（默认）
+- `--mode pre-tdd`: Phase 4 前置检查（仅文档验证）
+- `--mode post-tdd`: Phase 4 后置验证（含注入验证）
+- `--mode documents-only`: 仅检查文档
+
+**使用示例**:
+
 ```bash
+# Phase 4 前置检查
 python .claude/skills/projectflow-executor/scripts/check_compliance.py \
-    --version-dir {VERSION_DIR}
+    --version-dir {VERSION_DIR} \
+    --mode pre-tdd
+
+# Phase 4 后置验证
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --version-dir {VERSION_DIR} \
+    --mode post-tdd
+
+# 完整合规检查
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --version-dir {VERSION_DIR} \
+    --mode full
 ```
 
 详见 [COMPLIANCE.md](references/COMPLIANCE.md)

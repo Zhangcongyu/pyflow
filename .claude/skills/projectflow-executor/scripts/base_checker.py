@@ -351,3 +351,126 @@ class BaseComplianceChecker(ABC):
             issues=all_issues,
             execution_time_seconds=execution_time,
         )
+
+    def check_pre_tdd_requirements(self) -> list[ComplianceIssue]:
+        """
+        Phase 4 pre-check: Verify documents exist and are complete.
+
+        This is a gatekeeper check before executing TDD phases.
+
+        Returns:
+            List of compliance issues found
+        """
+        issues = []
+
+        # 1. Check constitution document
+        if not self.constitution_path or not self.constitution_path.exists():
+            issues.append(
+                ComplianceIssue(
+                    rule_id="PRE_TDD_NO_CONSTITUTION",
+                    severity=SeverityLevel.CRITICAL,
+                    category="pre-tdd",
+                    message="Constitution document must exist before TDD phase",
+                    fix_suggestion="Create pjflow/constitution.md using pyflow-constitution skill",
+                )
+            )
+            return issues  # Block execution
+
+        # 2. Check requirements document
+        if not self.requirements_path or not self.requirements_path.exists():
+            issues.append(
+                ComplianceIssue(
+                    rule_id="PRE_TDD_NO_REQUIREMENTS",
+                    severity=SeverityLevel.CRITICAL,
+                    category="pre-tdd",
+                    message="Requirements document must exist before TDD phase",
+                    fix_suggestion="Create requirements.md in version directory",
+                )
+            )
+            return issues  # Block execution
+
+        # 3. Check document content completeness
+        try:
+            constitution_content = self.constitution_path.read_text(encoding="utf-8")
+            if len(constitution_content.strip()) < 100:
+                issues.append(
+                    ComplianceIssue(
+                        rule_id="PRE_TDD_CONSTITUTION_EMPTY",
+                        severity=SeverityLevel.HIGH,
+                        category="pre-tdd",
+                        message="Constitution document appears incomplete",
+                        fix_suggestion="Add proper constitution content including Coding Standards",
+                    )
+                )
+        except Exception as e:
+            issues.append(
+                ComplianceIssue(
+                    rule_id="PRE_TDD_CONSTITUTION_READ_ERROR",
+                    severity=SeverityLevel.CRITICAL,
+                    category="pre-tdd",
+                    message=f"Failed to read constitution: {e}",
+                    fix_suggestion="Check constitution.md file permissions and format",
+                )
+            )
+            return issues
+
+        try:
+            requirements_content = self.requirements_path.read_text(encoding="utf-8")
+            if len(requirements_content.strip()) < 50:
+                issues.append(
+                    ComplianceIssue(
+                        rule_id="PRE_TDD_REQUIREMENTS_EMPTY",
+                        severity=SeverityLevel.HIGH,
+                        category="pre-tdd",
+                        message="Requirements document appears incomplete",
+                        fix_suggestion="Add detailed requirements including features and acceptance criteria",
+                    )
+                )
+        except Exception as e:
+            issues.append(
+                ComplianceIssue(
+                    rule_id="PRE_TDD_REQUIREMENTS_READ_ERROR",
+                    severity=SeverityLevel.CRITICAL,
+                    category="pre-tdd",
+                    message=f"Failed to read requirements: {e}",
+                    fix_suggestion="Check requirements.md file permissions and format",
+                )
+            )
+            return issues
+
+        return issues
+
+    def check_post_tdd_injection_verify(self) -> list[ComplianceIssue]:
+        """
+        Phase 4 post-check: Verify code reflects document constraints.
+
+        Checks that generated code:
+        1. Follows constitution Coding Standards
+        2. Implements features from requirements document
+        3. Has no feature creep beyond requirements
+
+        Returns:
+            List of compliance issues found
+        """
+        issues = []
+
+        # This check is partially implemented in existing check_* methods
+        # Here we primarily aggregate and generate "injection verification" report
+
+        # Check if all constitution requirements are reflected in code
+        issues.extend(self.check_code_style())
+        issues.extend(self.check_type_annotations())
+        issues.extend(self.check_error_handling())
+
+        # Add metadata issue indicating this is an injection verification check
+        if not any(i.severity == SeverityLevel.CRITICAL for i in issues):
+            issues.append(
+                ComplianceIssue(
+                    rule_id="INJECTION_VERIFY_SUCCESS",
+                    severity=SeverityLevel.INFO,
+                    category="injection-verify",
+                    message="Code appears to follow constitution constraints",
+                )
+            )
+
+        return issues

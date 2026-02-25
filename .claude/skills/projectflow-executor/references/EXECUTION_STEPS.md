@@ -165,6 +165,24 @@ Skill(skill="pyflow-tdd-cycle", args=f"""
 
 **关键**：Executor 不编写业务代码，只约束 TDD 工具的输出。
 
+#### Step 4.5: 后置验证 (Post-TDD) - 仅 Phase 4/5
+
+在 Phase 4 或 Phase 5 完成后，**必须**运行后置验证：
+
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language auto \
+    --version-dir {VERSION_DIR} \
+    --mode post-tdd
+```
+
+**验证内容**:
+- 代码风格符合宪法
+- 类型注解符合宪法
+- 错误处理符合宪法
+- 测试覆盖率达标
+- 代码是否反映文档约束
+
 ---
 
 ## Step 3.5: 判断脚手架 vs 业务逻辑
@@ -197,6 +215,26 @@ Skill(skill="pyflow-tdd-cycle", args=f"""
 ## Step 4: 调用 Tool
 
 > ⚠️ **Phase 4/5 特殊规则**: 必须注入宪法和需求！
+
+### Phase 4/5 三步骤执行流程
+
+#### Step 4.0: 前置检查 (Pre-TDD) - 仅 Phase 4/5
+
+在开始 Phase 4 或 Phase 5 之前，**必须**运行前置检查：
+
+```bash
+python .claude/skills/projectflow-executor/scripts/check_compliance.py \
+    --language auto \
+    --version-dir {VERSION_DIR} \
+    --mode pre-tdd
+```
+
+**检查内容**:
+- 宪法文档是否存在
+- 需求文档是否存在
+- 文档内容是否完整
+
+**阻断条件**: 如有 CRITICAL 级别问题，必须修复后才能继续。
 
 ### Phase 4/5 文档注入（强制执行）
 
