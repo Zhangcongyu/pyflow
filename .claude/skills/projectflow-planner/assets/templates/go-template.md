@@ -680,11 +680,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 生成完整测试套件
 
@@ -698,10 +700,10 @@ Task(
 
     ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
     **重要**: 违反上述约束的代码/测试将被拒绝！
@@ -722,6 +724,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Test files generated
 - [ ] Test structure defined
 - [ ] Test cases cover requirements
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Tests cover Requirements and Constitution standards
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -734,11 +737,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 实现所有功能使测试通过
 
@@ -750,15 +755,15 @@ Task(
     description="""
     实现所有功能使测试通过
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="实现功能"
 )
@@ -776,6 +781,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] All features implemented
 - [ ] All tests pass
 - [ ] Code follows constitution
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Code within Requirements scope, follows Constitution standards
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -788,11 +794,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 优化代码结构和质量
 
@@ -804,15 +812,15 @@ Task(
     description="""
     优化代码结构和质量
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="重构优化"
 )
@@ -845,11 +853,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-testing
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **调用**:
 ```
@@ -861,10 +871,10 @@ Task(
 
     ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
     **重要**: 违反上述约束的代码/测试将被拒绝！
@@ -886,6 +896,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Integration tests defined
 - [ ] Performance tests defined
 - [ ] Concurrency tests defined
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Tests cover Requirements and Constitution standards
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -896,11 +907,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **调用**:
 ```
@@ -910,15 +923,15 @@ Task(
     description="""
     实现所有功能使测试通过
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="实现基础功能"
 )
@@ -936,6 +949,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Basic implementation completed
 - [ ] All unit tests pass
 - [ ] Code follows constitution
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Code within Requirements scope, follows Constitution standards
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -946,13 +960,15 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**执行**: 添加并发支持提高性能
-
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
+
+**执行**: 添加并发支持提高性能
 
 **调用**:
 ```
@@ -962,15 +978,15 @@ Task(
     description="""
     添加 goroutine/channel 支持
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="优化并发性能"
 )
@@ -988,6 +1004,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Concurrent patterns implemented
 - [ ] All tests still pass
 - [ ] Performance improved
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Concurrent patterns follow Constitution requirements
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -1000,11 +1017,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-patterns
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 分析并优化性能瓶颈
 
@@ -1016,15 +1035,15 @@ Task(
     description="""
     分析并优化性能瓶颈
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="优化性能"
 )
@@ -1043,6 +1062,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Bottlenecks identified
 - [ ] Optimizations applied
 - [ ] Performance targets met
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Performance optimizations meet Requirements targets
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -1055,11 +1075,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-patterns
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 应用高级优化技术
 
@@ -1071,15 +1093,15 @@ Task(
     description="""
     应用高级优化技术
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="深度优化"
 )
@@ -1098,6 +1120,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Code quality excellent
 - [ ] All tests still pass
 - [ ] Performance significantly improved
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Refactor preserves Constitution compliance
 - [ ] Compliance check passed
 - [ ] Compliance report generated
@@ -1108,11 +1131,13 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**前置步骤**: 读取合规文档
+**Step 1: 读取完整文档**
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
+
+**Step 2: 调用 Task（全文注入）**
 
 **执行**: 清理代码、更新文档
 
@@ -1124,15 +1149,15 @@ Task(
     description="""
     清理代码、更新文档、确保代码质量
 
-    ## 强制约束（必须遵守）
+    ## 🚨 强制约束（必须遵守）
 
-    ### 项目宪法
+    ### 项目宪法（完整内容）
     {constitution}
 
-    ### 需求文档
+    ### 需求文档（完整内容）
     {requirements}
 
-    违反上述约束的代码将被拒绝！
+    **重要**: 违反上述约束的代码将被拒绝！
     """,
     activeForm="清理代码"
 )
@@ -1151,6 +1176,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] Documentation updated
 - [ ] All tests pass
 - [ ] Code quality excellent
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Final code follows all Constitution standards
 - [ ] Compliance check passed
 - [ ] Compliance report generated

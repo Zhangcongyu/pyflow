@@ -94,6 +94,59 @@ Step 7: 标记 Phase 完成 → 回到 Step 1
 
 > 🚨 **Phase 4 (TDD 执行) 和 Phase 5 (质量审核) 必须注入宪法和需求！**
 
+## 🚨 文档注入强制模式
+
+### ❌ 禁止模式（手动总结会丢失细节）
+
+```python
+# ❌ 错误：手动总结文档内容
+Task(
+    subagent_type="pyflow-python-pro",
+    description=f"""实现所有功能使测试通过
+
+## 强制约束（手动总结 - 会丢失细节）
+1. 类型安全优先 - 所有函数必须有类型注解
+2. TDD 纪律 - 测试先行
+3. 明确错误处理 - 使用自定义异常类
+...
+"""
+)
+```
+
+**问题**：手动总结会丢失文档中的重要细节！
+
+### ✅ 正确模式（全文注入）
+
+```python
+# ✅ 正确：读取完整文档并全文注入
+constitution = Read("pjflow/constitution.md")
+requirements = Read(f"pjflow/{VERSION_DIR}/requirements.md")
+
+Task(
+    subagent_type="pyflow-python-pro",
+    description=f"""实现所有功能使测试通过
+
+## 强制约束（必须遵守）
+
+### 项目宪法（完整内容）
+{constitution}
+
+### 需求文档（完整内容）
+{requirements}
+
+**重要**: 违反上述约束的代码将被拒绝！必须确保所有代码符合宪法要求和需求范围。
+"""
+)
+```
+
+**验证清单**：
+- [ ] 使用 `Read()` 工具读取完整文档
+- [ ] 文档内容通过 f-string 全文注入
+- [ ] `{constitution}` 和 `{requirements}` 变量被完整替换
+- [ ] 没有"总结"、"提炼"等手动处理
+
+---
+
 **三步骤执行流程**:
 
 #### Step 1: 前置检查 (Pre-TDD)

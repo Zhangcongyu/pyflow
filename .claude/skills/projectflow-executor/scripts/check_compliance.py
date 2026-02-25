@@ -14,9 +14,9 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from scripts.base_checker import ComplianceResult, SeverityLevel
 from scripts.checker_factory import CheckerFactory
 from scripts.compliance_reporter import ComplianceReporter
-from scripts.base_checker import SeverityLevel, ComplianceResult
 
 
 def main() -> int:

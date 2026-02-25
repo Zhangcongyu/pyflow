@@ -549,6 +549,14 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **前置步骤**: 注入文档上下文
 
+**Step 1: 读取完整文档**
+```python
+constitution = Read("pjflow/constitution.md")
+requirements = Read("pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
+**Step 2: 调用 Task（全文注入）**
+
 **Tool**: pyflow-test-automator
 
 **Tool Type**: Task (subagent_type)
@@ -559,20 +567,18 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 ```
 Task(
     subagent_type="pyflow-test-automator",
-    subject="生成测试套件",
     description=f"""为 {{GOAL}} 生成完整测试套件
 
 ## 🚨 强制约束（必须遵守）
 
-### 项目宪法
+### 项目宪法（完整内容）
 {constitution}
 
-### 需求文档
+### 需求文档（完整内容）
 {requirements}
 
 **重要**: 测试必须覆盖所有需求功能和宪法标准！
-""",
-    activeForm="生成测试套件"
+"""
 )
 ```
 
@@ -588,6 +594,14 @@ Task(
 #### Phase 4.2: GREEN - 实现功能
 
 **前置步骤**: 注入文档上下文
+
+**Step 1: 读取完整文档**
+```python
+constitution = Read("pjflow/constitution.md")
+requirements = Read("pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
+**Step 2: 调用 Task（全文注入）**
 
 **Tool**: pyflow-python-pro (或 pyflow-fastapi-pro，如果项目类型是 FastAPI)
 
@@ -609,10 +623,10 @@ Task(
 
 ## 🚨 强制约束（必须遵守）
 
-### 项目宪法
+### 项目宪法（完整内容）
 {constitution}
 
-### 需求文档
+### 需求文档（完整内容）
 {requirements}
 
 **重要**: 代码必须符合宪法要求，且在需求范围内！违反约束的代码将被拒绝！
@@ -630,6 +644,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 ```
 
 **CHECKLIST**:
+- [x] 文档已读取（使用 Read 工具）
 - [ ] All features implemented
 - [ ] All tests pass
 - [ ] Code follows constitution
@@ -644,6 +659,14 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **前置步骤**: 注入文档上下文
 
+**Step 1: 读取完整文档**
+```python
+constitution = Read("pjflow/constitution.md")
+requirements = Read("pjflow/{{VERSION_DIR}}/requirements.md")
+```
+
+**Step 2: 调用 Task（全文注入）**
+
 **Tool**: pyflow-python-pro
 
 **Tool Type**: Task (subagent_type)
@@ -654,20 +677,18 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 ```
 Task(
     subagent_type="pyflow-python-pro",
-    subject="重构优化代码",
     description=f"""优化代码结构和质量
 
 ## 🚨 强制约束（必须遵守）
 
-### 项目宪法
+### 项目宪法（完整内容）
 {constitution}
 
-### 需求文档
+### 需求文档（完整内容）
 {requirements}
 
-**重要**: 重构不能违反宪法原则，且必须在需求范围内！
-""",
-    activeForm="重构优化"
+**重要**: 重构不能违反宪法原则，且必须在需求范围内！违反约束的代码将被拒绝！
+"""
 )
 ```
 
@@ -705,12 +726,11 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 ```
 Task(
     subagent_type="pyflow-test-automator",
-    subject="生成完整测试套件",
     description=f"""为 {{GOAL}} 生成单元测试、集成测试、性能测试、安全测试
 
 ## 🚨 强制约束
 
-### 项目宪法
+### 项目宪法（完整内容）
 {constitution}
 
 ### 需求文档

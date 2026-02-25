@@ -850,6 +850,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 ```
 
 **CHECKLIST**:
+- [x] 文档已读取（使用 Read 工具）
 - [ ] All features implemented
 - [ ] All tests pass
 - [ ] Code follows constitution
@@ -908,6 +909,7 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - [ ] All tests still pass
 - [ ] Code quality improved
 - [ ] Performance optimized (if needed)
+- [ ] 文档已读取（使用 Read 工具）
 - [ ] Compliance: Refactor preserves Constitution compliance
 - [ ] Compliance check passed
 - [ ] Compliance report generated
