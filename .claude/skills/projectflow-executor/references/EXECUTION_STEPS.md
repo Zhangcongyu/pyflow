@@ -87,7 +87,7 @@ dependencies = ["typer>=0.9.0", "rarfile>=4.0", "rich>=13.0.0"]
 """
 
 # 2. 从模板提取工具配置
-template = Read("../projectflow-planner/assets/templates/python-complete-template.md")
+template = Read(".claude/skills/projectflow-planner/assets/templates/python-complete-template.md")
 """
 模板提供：
 - 中文镜像源配置
@@ -353,9 +353,9 @@ Edit(
 **说明**: 对于简单项目，不需要调用 brainstorming skill，直接生成需求文档模板。
 
 **参考模板**:
-- Python: `../projectflow-planner/assets/templates/python-complete-template.md` (Phase 0.1)
-- TypeScript: `../projectflow-planner/assets/templates/typescript-complete-template.md` (Phase 0.1)
-- Go: `../projectflow-planner/assets/templates/go-template.md` (Phase 0.1)
+- Python: `.claude/skills/projectflow-planner/assets/templates/python-complete-template.md` (Phase 0.1)
+- TypeScript: `.claude/skills/projectflow-planner/assets/templates/typescript-complete-template.md` (Phase 0.1)
+- Go: `.claude/skills/projectflow-planner/assets/templates/go-template.md` (Phase 0.1)
 
 **执行方式**: 使用 Write 工具，按模板写入需求文档
 

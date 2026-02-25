@@ -52,11 +52,13 @@ python .claude/skills/projectflow-planner/scripts/detect_environment.py --json
 
 ## Step 3: 读取综合模板
 
+**模板路径**: `.claude/skills/projectflow-planner/assets/templates/`
+
 | 语言 | 模板文件 | 复杂度支持 |
 |------|---------|------------|
 | Python | `python-complete-template.md` | ✅ simple/medium/complex |
 | TypeScript | `typescript-complete-template.md` | ✅ simple/medium/complex |
-| Go | `go-template.md` | ⚠️ 基础结构 |
+| Go | `go-template.md` | ✅ simple/medium/complex |
 
 ## Step 4: 转化模板
 

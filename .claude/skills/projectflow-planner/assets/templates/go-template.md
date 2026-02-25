@@ -13,7 +13,9 @@
 | `{{COMPLEXITY}}` | simple / medium / complex | medium |
 | `{{VERSION_DIR}}` | 版本目录名称 | v0_initial / v1_add_feature |
 | `{{PROJECT_NAME}}` | 项目名称 | myapp |
-| `{{MODULE_PATH}}` | Go 模块路径 | github.com/user/myapp |
+| `{{MODULE_PATH}}` | Go 模块路径 | github.com/user/myapp 或本地路径 |
+
+**说明**: `{{MODULE_PATH}}` 为 Go 模块路径，如果是 GitHub 项目则为 `github.com/user/repo`，如果是本地项目则为相对路径如 `./myapp`。Executor 执行时根据当前目录自动推断或使用示例值。
 
 ---
 
