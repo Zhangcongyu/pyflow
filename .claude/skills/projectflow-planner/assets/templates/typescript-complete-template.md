@@ -1,6 +1,6 @@
 # TypeScript 项目完整计划模板
 
-**说明**: 此模板包含 TypeScript 项目所有场景（simple/medium/complex）的完整 Phase 0-5 流程，planner 可直接阅读此文件生成可执行的 plan.md
+**说明**: 此模板包含 TypeScript 项目所有 Phase 的框架。Planner 读取此模板生成 task_plan.md，Executor 根据计划执行。
 
 ---
 
@@ -10,29 +10,27 @@
 |--------|------|----------|
 | `{{GOAL}}` | 用户原始需求 | "创建一个 CLI 待办事项应用" |
 | `{{PROJECT_STATUS}}` | new / add-feature | new |
-| `{{COMPLEXITY}}` | simple / medium / complex | simple |
+| `{{COMPLEXITY}}` | simple / medium / complex | medium |
 | `{{VERSION_DIR}}` | 版本目录名称 | v0_initial / v1_add_feature |
-| `{{LANGUAGE}}` | 编程语言 | typescript |
+| `{{PROJECT_NAME}}` | 项目名称 | myapp |
 
 ---
 
 ## Phase 0: 需求互动
 
+### Phase 0.0: 需求探索
+
 **适用场景**: `{{COMPLEXITY}}` == medium 或 complex
+
+**执行顺序**: 优先执行
+
+**状态**: pending
 
 **Tool**: pyflow-brainstorming
 
 **参数**: `--version-dir {{VERSION_DIR}} {{GOAL}}`
 
-**执行**: 探索用户需求，明确功能边界，输出到版本化需求文档
-
-**调用**:
-```
-Skill(
-    skill="pyflow-brainstorming",
-    args="--version-dir {{VERSION_DIR}} {{GOAL}}"
-)
-```
+**目标**: 探索用户需求，明确功能边界，输出版本化需求文档
 
 **输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
 
@@ -40,22 +38,24 @@ Skill(
 - [ ] 需求分析完成
 - [ ] 功能边界明确
 - [ ] 技术方案确认
-- [ ] 需求文档已创建到 pjflow/{{VERSION_DIR}}/requirements.md
+- [ ] 需求文档已创建
+
+**Skip if**: `{{COMPLEXITY}}` == simple
 
 ---
 
-## Step 5.5: 简单项目需求文档生成
+### Phase 0.1: 简单项目需求文档生成
 
 **适用场景**: `{{PROJECT_STATUS}}` == new 且 `{{COMPLEXITY}}` == simple
 
-**执行时机**: Phase 1 完成后
+**执行顺序**: 优先执行（在 Phase 1 之前）
 
-**说明**: Simple 项目不需要 Phase 0 brainstorming，直接生成需求文档模板
+**Tool**: Write
 
-**工具**: Write
+**目标**: 生成简单项目的需求文档模板
 
-**执行**:
-```
+**内容**:
+\`\`\`
 Write(
     file_path="pjflow/{{VERSION_DIR}}/requirements.md",
     content="""# Requirements
@@ -76,6 +76,41 @@ Write(
 - Description:
 - Acceptance Criteria:
 - Priority:
+
+### Feature 2
+- Description:
+- Acceptance Criteria:
+- Priority:
+
+## Project Architecture
+
+### 目录结构
+
+\`\`\`
+{{PROJECT_NAME}}/
+├── src/
+│   ├── index.ts
+│   └── cli.ts
+├── tests/
+│   └── {{PROJECT_NAME}}.test.ts
+├── package.json
+├── tsconfig.json
+└── README.md
+\`\`\`
+
+### 技术栈
+
+- **语言**: TypeScript 5.0+
+- **包管理**: pnpm
+- **CLI 框架**: commander / yargs
+- **测试框架**: vitest
+
+### 模块划分
+
+| 模块 | 文件 | 职责 |
+|------|------|------|
+| CLI | cli.ts | 命令行界面，参数解析 |
+| Main | index.ts | 程序入口 |
 
 ## Technical Requirements
 
@@ -98,10 +133,10 @@ Write(
 **输出位置**: `pjflow/{{VERSION_DIR}}/requirements.md`
 
 **CHECKLIST**:
-- [ ] 需求文档已创建
+- [ ] 需求文档模板已创建
 - [ ] 输出路径正确
 
-**Skip if**: `{{COMPLEXITY}}` != simple（medium/complex 项目通过 Phase 0 brainstorming 生成需求）
+**Skip if**: `{{COMPLEXITY}}` == medium 或 complex
 
 ---
 
