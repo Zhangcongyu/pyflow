@@ -731,7 +731,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-golang-testing",
     subject="生成测试套件",
-    description="""
+    description=f"""
     为 {{GOAL}} 生成完整测试套件
 
     ## 🚨 强制约束（必须遵守）
@@ -787,7 +787,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-go-pro",
     subject="实现功能使测试通过",
-    description="""
+    description=f"""
     实现所有功能使测试通过
 
     ## 🚨 强制约束（必须遵守）
@@ -843,7 +843,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-go-pro",
     subject="重构优化代码",
-    description="""
+    description=f"""
     优化代码结构和质量
 
     ## 🚨 强制约束（必须遵守）
@@ -899,7 +899,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-golang-testing",
     subject="生成完整测试套件",
-    description="""
+    description=f"""
     为 {{GOAL}} 生成单元测试、集成测试、性能测试、并发测试
 
     ## 🚨 强制约束（必须遵守）
@@ -952,7 +952,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-go-pro",
     subject="实现基础功能",
-    description="""
+    description=f"""
     实现所有功能使测试通过
 
     ## 🚨 强制约束（必须遵守）
@@ -1006,7 +1006,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-go-pro",
     subject="添加并发支持以提高性能",
-    description="""
+    description=f"""
     添加 goroutine/channel 支持
 
     ## 🚨 强制约束（必须遵守）
@@ -1062,7 +1062,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-golang-patterns",
     subject="分析并优化性能瓶颈",
-    description="""
+    description=f"""
     分析并优化性能瓶颈
 
     ## 🚨 强制约束（必须遵守）
@@ -1119,7 +1119,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-golang-patterns",
     subject="深度性能优化",
-    description="""
+    description=f"""
     应用高级优化技术
 
     ## 🚨 强制约束（必须遵守）
@@ -1174,7 +1174,7 @@ requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 Task(
     subagent_type="pyflow-go-pro",
     subject="最终代码清理",
-    description="""
+    description=f"""
     清理代码、更新文档、确保代码质量
 
     ## 🚨 强制约束（必须遵守）
@@ -1270,7 +1270,7 @@ compliance_report = Read("./pjflow/{{VERSION_DIR}}/compliance_report.md")
 Task(
     subagent_type="pyflow-go-reviewer",
     subject="审核代码",
-    description="""
+    description=f"""
     审核整个代码库
 
     ## 参考文档

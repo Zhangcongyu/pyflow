@@ -211,9 +211,11 @@ Skill(
 ```
 
 **Task 调用** (Medium 项目):
+
+**Red 阶段 - 生成测试**:
 ```python
 Task(
-    subagent_type="test-automator",
+    subagent_type="pyflow-test-automator",
     subject="生成测试套件",
     description=f"""为 {GOAL} 生成完整测试套件
 
@@ -223,9 +225,8 @@ Task(
 )
 ```
 
-> **注意**: `enhanced_context` 必须使用 SKILL.md 中定义的标准注入格式
-
----
+**Green 阶段 - 实现功能**:
+```python
 Task(
     subagent_type="pyflow-python-pro",
     subject="实现功能使测试通过",
@@ -236,6 +237,8 @@ Task(
     activeForm="实现功能"
 )
 ```
+
+> **注意**: `enhanced_context` 必须使用 SKILL.md 中定义的标准注入格式
 
 ### 非 Phase 4/5 调用
 
