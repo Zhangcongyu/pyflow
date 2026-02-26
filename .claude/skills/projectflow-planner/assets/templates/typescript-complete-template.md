@@ -17,6 +17,39 @@
 
 ---
 
+## 文档注入标准格式（Phase 4/5 必须遵守）
+
+**重要**: Phase 4/5 所有子阶段必须使用以下格式注入文档上下文。
+
+**标准格式**:
+```typescript
+// 读取文档
+const constitution = Read("./pjflow/constitution.md");
+const requirements = Read("./pjflow/{VERSION_DIR}/requirements.md");
+
+// 构建增强提示
+const enhancedArgs = `${originalArgs}
+
+## 🚨 强制约束（必须遵守）
+
+### 项目宪法 (Constitution)
+${constitution}
+
+### 需求文档 (Requirements)
+${requirements}
+
+**重要**: 违反上述约束的代码将被拒绝！必须确保所有代码符合宪法要求和需求范围。`;
+```
+
+**强制要求**:
+1. **全文注入**: 必须读取完整文档内容，禁止手动总结
+2. **三步骤执行**: 前置检查 → 文档注入 → 后置验证
+3. **路径规范**:
+   - 宪法: `./pjflow/constitution.md`
+   - 需求: `./pjflow/{VERSION_DIR}/requirements.md`
+
+---
+
 ## Phase 0: 需求互动
 
 ### Phase 0.0: 需求探索
@@ -693,11 +726,14 @@ touch src/new_feature/index.ts
 - **严禁手动编写业务逻辑**
 - 必须使用 TDD 工具完成所有编码工作
 
+**📋 文档注入**: 所有 Phase 4 子阶段使用本文档顶部定义的标准格式。
+
 ### Simple 项目 ({{COMPLEXITY}} == simple)
 
 **Tool**: pyflow-tdd-cycle
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -751,7 +787,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -811,7 +848,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -866,7 +904,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -924,7 +963,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-test-automator
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -981,7 +1021,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 - Express 项目 → pyflow-typescript-pro
 - 其他 TypeScript 项目 → pyflow-typescript-pro
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -1031,7 +1072,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-typescript-pro
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -1085,7 +1127,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-typescript-performance-engineer
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -1140,7 +1183,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-typescript-performance-engineer
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -1193,7 +1237,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-typescript-pro
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -1250,7 +1295,8 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 #### 5.1 质量检查
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")

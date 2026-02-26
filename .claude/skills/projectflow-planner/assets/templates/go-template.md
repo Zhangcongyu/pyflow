@@ -17,6 +17,40 @@
 
 ---
 
+## 文档注入标准格式（Phase 4/5 必须遵守）
+
+**重要**: Phase 4/5 所有子阶段必须使用以下格式注入文档上下文。
+
+**标准格式**:
+```go
+// 读取文档
+constitution := Read("./pjflow/constitution.md")
+requirements := Read("./pjflow/{VERSION_DIR}//requirements.md")
+
+// 构建增强提示
+enhancedArgs := fmt.Sprintf("%s
+
+## 🚨 强制约束（必须遵守）
+
+### 项目宪法 (Constitution)
+%s
+
+### 需求文档 (Requirements)
+%s
+
+**重要**: 违反上述约束的代码将被拒绝！必须确保所有代码符合宪法要求和需求范围。
+", originalPrompt, constitution, requirements)
+```
+
+**强制要求**:
+1. **全文注入**: 必须读取完整文档内容，禁止手动总结
+2. **三步骤执行**: 前置检查 → 文档注入 → 后置验证
+3. **路径规范**:
+   - 宪法: `./pjflow/constitution.md`
+   - 需求: `./pjflow/{VERSION_DIR}/requirements.md`
+
+---
+
 ## Phase 0: 需求互动
 
 ### Phase 0.0: 需求探索
@@ -622,11 +656,14 @@ touch internal/new_feature/handler.go
 - **严禁手动编写业务逻辑**
 - 必须使用 TDD 工具完成所有编码工作
 
+**📋 文档注入**: 所有 Phase 4 子阶段使用本文档顶部定义的标准格式。
+
 ### Simple 项目 ({{COMPLEXITY}} == simple)
 
 **Tool**: pyflow-golang-testing
 
-**前置步骤**: 读取合规文档
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
@@ -680,13 +717,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 生成完整测试套件
 
@@ -737,13 +773,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 实现所有功能使测试通过
 
@@ -794,13 +829,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool Type**: Task (subagent_type)
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 优化代码结构和质量
 
@@ -853,13 +887,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-testing
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **调用**:
 ```
@@ -907,13 +940,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **调用**:
 ```
@@ -960,13 +992,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 添加并发支持提高性能
 
@@ -1017,13 +1048,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-patterns
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 分析并优化性能瓶颈
 
@@ -1075,13 +1105,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-golang-patterns
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 应用高级优化技术
 
@@ -1131,13 +1160,12 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 **Tool**: pyflow-go-pro
 
-**Step 1: 读取完整文档**
+**前置步骤**: 使用本文档顶部定义的标准格式读取文档
+
 ```python
 constitution = Read("./pjflow/constitution.md")
 requirements = Read("./pjflow/{{VERSION_DIR}}/requirements.md")
 ```
-
-**Step 2: 调用 Task（全文注入）**
 
 **执行**: 清理代码、更新文档
 

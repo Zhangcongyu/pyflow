@@ -1,5 +1,7 @@
 # 执行步骤详解
 
+> **核心概念**: 编排者vs执行者、脚手架vs业务逻辑、三层信息源等核心定义见 [SKILL.md](../SKILL.md)
+
 ## Step 1: 读取 task_plan.md 并找到下一个 Phase
 
 ```bash
@@ -24,16 +26,7 @@ pjflow/{VERSION_DIR}/task_plan.md    # 当前执行计划
 
 > 🧠 **充分利用 LLM 理解能力，动态提取需求信息**
 
-### Phase 分类执行策略
-
-| Phase 类型 | 信息来源 | 执行方式 |
-|------------|---------|---------|
-| **Phase 0, 1** | - | 直接执行（文档还不存在） |
-| **Phase 2.0, 2.1, 2.5** | 🔧 模板（通用脚本） | 直接执行 |
-| **Phase 2.2, 2.3, 2.4** | 📋 需求 + 🔧 模板 | LLM 理解并合并 |
-| **Phase 3.1-3.4** | 📋 需求 | LLM 理解 |
-| **Phase 4** | 📋 需求 + 📜 宪法 | 注入到 TDD 工具 |
-| **Phase 5** | - | 运行合规检查 |
+**Phase 分类执行策略**: 详见 [SKILL.md Phase 执行策略](../SKILL.md#phase-执行策略)
 
 ### 各子阶段详细策略
 
@@ -145,23 +138,7 @@ new_requirements = Read(f"pjflow/{version_dir}/requirements.md")
 
 **不是自己执行，而是注入文档到 TDD 工具**
 
-```python
-# 读取文档
-constitution = Read("pjflow/constitution.md")
-requirements = Read(f"pjflow/{version_dir}/requirements.md")
-
-# 注入到 TDD 工具
-Skill(skill="pyflow-tdd-cycle", args=f"""
-{GOAL}
-
-## 🚨 强制约束
-### 项目宪法
-{constitution}
-
-### 需求文档
-{requirements}
-""")
-```
+**文档注入格式**: 详见 [SKILL.md 文档注入强制模式](../SKILL.md#-文档注入强制模式)
 
 **关键**：Executor 不编写业务代码，只约束 TDD 工具的输出。
 
@@ -169,12 +146,7 @@ Skill(skill="pyflow-tdd-cycle", args=f"""
 
 在 Phase 4 或 Phase 5 完成后，**必须**运行后置验证：
 
-```bash
-python .claude/skills/projectflow-executor/scripts/check_compliance.py \
-    --language auto \
-    --version-dir {VERSION_DIR} \
-    --mode post-tdd
-```
+**检查模式和命令**: 详见 [SKILL.md 合规检查](../SKILL.md#合规检查)
 
 **验证内容**:
 - 代码风格符合宪法
@@ -218,60 +190,16 @@ python .claude/skills/projectflow-executor/scripts/check_compliance.py \
 
 ### Phase 4/5 三步骤执行流程
 
-#### Step 4.0: 前置检查 (Pre-TDD) - 仅 Phase 4/5
+**详细步骤**: 详见 [SKILL.md 文档注入强制模式](../SKILL.md#-文档注入强制模式)
 
-在开始 Phase 4 或 Phase 5 之前，**必须**运行前置检查：
+**执行流程概述**:
+1. **Step 4.0: 前置检查 (Pre-TDD)** - 验证文档存在且完整
+2. **Step 4.1-4.3: 文档注入** - 读取文档、构建增强提示、注入到 Tool 调用
+3. **Step 4.5: 后置验证 (Post-TDD)** - 验证代码符合文档约束
 
-```bash
-python .claude/skills/projectflow-executor/scripts/check_compliance.py \
-    --language auto \
-    --version-dir {VERSION_DIR} \
-    --mode pre-tdd
-```
+### Tool 调用示例
 
-**检查内容**:
-- 宪法文档是否存在
-- 需求文档是否存在
-- 文档内容是否完整
-
-**阻断条件**: 如有 CRITICAL 级别问题，必须修复后才能继续。
-
-### Phase 4/5 文档注入（强制执行）
-
-当当前 Phase 为 4 或 5 时，**必须**执行以下注入步骤：
-
-#### Step 4.1: 读取文档
-
-```python
-# 读取项目宪法
-constitution_content = Read("pjflow/constitution.md")
-
-# 读取版本化需求文档
-requirements_content = Read(f"pjflow/{VERSION_DIR}/requirements.md")
-```
-
-#### Step 4.2: 构建增强提示
-
-```python
-enhanced_context = f"""
-## 🚨 强制约束（必须遵守）
-
-### 项目宪法 (Constitution)
-{constitution_content}
-
-### 需求文档 (Requirements)
-{requirements_content}
-
-**重要**: 违反上述约束的代码/测试将被拒绝！必须确保：
-1. 所有代码符合宪法规则（类型注解、代码风格、测试覆盖率等）
-2. 所有功能在需求范围内（无功能蔓延）
-3. 所有需求都有对应测试覆盖
-"""
-```
-
-#### Step 4.3: 注入到 Tool 调用
-
-**Skill 调用示例** (Simple 项目 Phase 4):
+**Skill 调用** (Simple 项目):
 ```python
 Skill(
     skill="pyflow-tdd-cycle",
@@ -282,7 +210,7 @@ Skill(
 )
 ```
 
-**Task 调用示例** (Medium 项目 Phase 4.1):
+**Task 调用** (Medium 项目):
 ```python
 Task(
     subagent_type="test-automator",
@@ -295,8 +223,9 @@ Task(
 )
 ```
 
-**Task 调用示例** (Medium 项目 Phase 4.2):
-```python
+> **注意**: `enhanced_context` 必须使用 SKILL.md 中定义的标准注入格式
+
+---
 Task(
     subagent_type="pyflow-python-pro",
     subject="实现功能使测试通过",
